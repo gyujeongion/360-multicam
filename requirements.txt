@@ -1,0 +1,13 @@
+numpy<3
+opencv-python>=4.8
+torch
+torchvision
+scipy
+pandas
+tqdm
+python_speech_features
+scenedetect[opencv]<0.6.2
+scikit-learn
+matplotlib
+protobuf
+pytest

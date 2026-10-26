@@ -1,0 +1,34 @@
+{
+ "note": "2026-10-24 테스트 시퀀스(multicam_car 인물 C, 70° 1920x1080, 958프레임) 원격 맥 측정. re/dyn_seam_ab.py 15프레임마다 44표본 중앙값 + re/swap_check.py 프리미어 미리보기 대비 얼굴 선명도",
+ "ab": {
+  "feather": {
+   "align": 23.161,
+   "ret": 0.76,
+   "fake": 0.0,
+   "flick": 0.657,
+   "sec": 0.034
+  },
+  "band2": {
+   "align": 19.522,
+   "ret": 0.928,
+   "fake": 0.124,
+   "flick": 0.805,
+   "sec": 0.151,
+   "wob_t": 0.202
+  },
+  "frames": 958,
+  "samples": 44
+ },
+ "face_sharp_ratio_vs_preview": {
+  "feather": 19.9,
+  "band2": 37.94
+ },
+ "face_center_diff_max_pct": {
+  "feather": 2.34,
+  "band2": 2.37
+ },
+ "render_32s_sec": {
+  "feather": 123,
+  "band2": 174
+ }
+}

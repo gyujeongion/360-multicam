@@ -1,0 +1,433 @@
+<title>화자 라벨링 데스크</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* 레이아웃: 영상 위, 키 패드·타임라인 아래 — 편집 데스크의 모니터+컨트롤러 배치 */
+:root{
+  --bg:#eef1f0; --panel:#ffffff; --ink:#18201e; --muted:#5d6b67; --line:#d3dbd8; --accent:#0f6e64;
+  --p1:#d0543a; --p2:#2f6fd6; --p3:#b0862a; --p4:#4f8f3a; --p5:#8a4fc2; --p6:#c2447e;
+  --f-ui:"IBM Plex Sans KR", "Apple SD Gothic Neo", system-ui, sans-serif;
+  --f-mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121816; --panel:#1b2321; --ink:#e6ecea; --muted:#94a39f; --line:#2c3735; --accent:#4cc2b2;
+  --p1:#ef7a60; --p2:#6d9df0; --p3:#d9b45a; --p4:#82c26b; --p5:#b98ae8; --p6:#e57aa9; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121816; --panel:#1b2321; --ink:#e6ecea; --muted:#94a39f; --line:#2c3735; --accent:#4cc2b2;
+  --p1:#ef7a60; --p2:#6d9df0; --p3:#d9b45a; --p4:#82c26b; --p5:#b98ae8; --p6:#e57aa9; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-ui);font-size:15px;line-height:1.5}
+.wrap{max-width:1100px;margin:0 auto;padding-block:20px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:16px}
+header{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 16px}
+h1{font-size:20px;font-weight:600;margin:0;text-wrap:balance}
+.status{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.status b{color:var(--accent);font-weight:600}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;display:grid;gap:12px;min-width:0}
+.how{color:var(--muted);font-size:14px;margin:0;max-width:72ch}
+.how kbd,.key kbd{font-family:var(--f-mono);font-size:12px;border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:0 5px;background:var(--bg);color:var(--ink)}
+.pick{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+.pick label{font-weight:500}
+.stage{position:relative;max-width:100%}
+video{width:100%;max-width:100%;background:#000;border-radius:8px;display:block}
+.tiles{position:absolute;inset:0;display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:1fr;border-radius:8px;overflow:hidden;touch-action:manipulation}
+.tile{position:relative;border:2px solid transparent;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.tile .tag{position:absolute;left:6px;top:6px;font:600 15px/1 var(--f-mono);color:#fff;background:color-mix(in srgb,var(--c) 85%,#000);padding:4px 7px;border-radius:5px}
+.tile.on{border-color:var(--c);box-shadow:inset 0 0 0 4px var(--c)}
+.tile.on .tag{outline:2px solid #fff}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-family:var(--f-mono);font-size:13px}
+.bar .time{min-width:120px;font-variant-numeric:tabular-nums}
+button,select{font:inherit;font-size:13px;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:6px;padding:5px 10px;cursor:pointer}
+button:hover,select:hover{border-color:var(--accent)}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.keys{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.key{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-height:52px;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:manipulation;cursor:pointer;transition:background .08s}
+.key .dot{width:12px;height:12px;border-radius:50%;background:var(--c);flex:none}
+.key .who{display:grid;line-height:1.25;min-width:0}
+.key .who b{font-weight:600}
+.key .who .desc{font:inherit;font-size:12px;color:var(--muted);background:transparent;border:0;border-bottom:1px dashed var(--line);padding:0;width:100%;min-width:0}
+.key.on{background:color-mix(in srgb,var(--c) 22%,var(--panel));border-color:var(--c)}
+.tlbar{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.tl{position:relative;overflow-x:auto;overflow-y:hidden;border:1px solid var(--line);border-radius:8px;background:var(--bg);-webkit-overflow-scrolling:touch}
+.tlin{position:relative}
+.ruler{height:20px;position:relative;border-bottom:1px solid var(--line)}
+.tick{position:absolute;top:0;height:20px;border-left:1px solid var(--line);font:11px/20px var(--f-mono);color:var(--muted);padding-left:3px;white-space:nowrap}
+.lane{position:relative;height:46px;border-bottom:1px solid var(--line);touch-action:pan-x}
+.lane .nm{position:sticky;left:0;z-index:3;display:inline-flex;align-items:center;justify-content:center;width:30px;height:100%;font:600 13px var(--f-mono);color:#fff;background:color-mix(in srgb,var(--c) 80%,#000)}
+.seg{position:absolute;top:6px;height:34px;border-radius:6px;background:color-mix(in srgb,var(--c) 75%,transparent);border:1px solid var(--c);touch-action:none;cursor:grab}
+.seg.sel{outline:2px solid var(--ink);outline-offset:1px;z-index:2}
+.seg .h{position:absolute;top:-4px;bottom:-4px;width:22px;touch-action:none;cursor:ew-resize}
+.seg .h::after{content:"";position:absolute;top:10px;bottom:10px;left:9px;width:4px;border-radius:2px;background:#fff;opacity:.9}
+.seg .h.l{left:-11px}.seg .h.r{right:-11px}
+.ph{position:absolute;top:0;bottom:0;width:2px;background:var(--accent);pointer-events:none;z-index:4}
+.legend{font-size:12px;color:var(--muted)}
+.stats{display:flex;flex-wrap:wrap;gap:6px 16px;font-family:var(--f-mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.warn{color:var(--p1)}
+@media (prefers-reduced-motion:reduce){.key{transition:none}}
+@media (max-width:640px){
+  .wrap{padding-block:10px 28px;gap:10px}
+  .panel{padding:10px}
+  .keys{grid-template-columns:repeat(3,1fr);gap:6px}
+  .key{padding:6px 8px;gap:6px}
+  .key kbd{display:none}
+  .stage{position:sticky;top:env(safe-area-inset-top,0px);z-index:2}
+  .bar button,.bar select{padding:9px 12px;font-size:14px}
+  .how .desk{display:none}
+  .tile .tag .d{display:none}
+}
+.alt{font-size:12px;color:var(--muted)}
+.alt summary{cursor:pointer}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>화자 라벨링 데스크</h1>
+    <div class="status" id="status">저장소 연결 중…</div>
+  </header>
+
+  <section class="panel">
+    <p class="how">재생하면서 <b>말하기 시작한 사람의 얼굴을 한 번 탭</b>하세요 — 그 사람이 켜지고 앞사람은 자동으로 꺼집니다. <b>켜진 사람을 다시 탭</b>하면 꺼집니다(아무도 안 말함). 두 명이 겹쳐 말하면 두 번째 사람을 <b>길게(0.5초)</b> 눌러 추가합니다. 아래 이름 버튼도 똑같이 동작하고, 표시는 바로 저장됩니다. 타임라인 막대를 누르면 그 표시가 지워집니다.
+      <span class="desk"><kbd>1</kbd>~<kbd>5</kbd> 전환 · <kbd>Shift</kbd>+숫자 겹침 추가 · <kbd>0</kbd> 모두 끄기 · <kbd>Space</kbd> 재생/정지 · <kbd>←</kbd><kbd>→</kbd> 2초 이동 · <kbd>Backspace</kbd> 마지막 표시 취소</span></p>
+    <details class="alt"><summary>다른 영상 파일로 하기</summary>
+      <div class="pick">
+        <input type="file" id="file" accept="video/*">
+        <span class="legend" id="fileHint">orbcut 출력의 label_mobile.mp4 또는 panorama.mp4</span>
+      </div>
+    </details>
+  </section>
+
+  <section class="panel">
+    <div class="stage"><video id="vid" playsinline preload="metadata"></video><div class="tiles" id="tiles" hidden></div></div>
+    <div class="bar">
+      <button id="play" type="button">재생</button>
+      <span class="time" id="time">0:00.0 / 0:00.0</span>
+      <label for="rate" class="legend">속도</label>
+      <select id="rate"><option value="1">1×</option><option value="0.75">0.75×</option><option value="0.5">0.5×</option></select>
+      <button id="undo" type="button">마지막 취소</button>
+      <button id="export" type="button" hidden>labels.json 저장</button>
+    </div>
+    <div class="keys" id="keys"></div>
+    <div class="tlbar">
+      <button id="zout" type="button" aria-label="축소">－</button><button id="zin" type="button" aria-label="확대">＋</button>
+      <button id="del" type="button" disabled>선택 구간 지우기</button>
+      <span class="legend">빈 곳 탭 = 2초 구간 추가 · 막대 양끝 끌기 = 트림 · 가운데 끌기 = 이동 · 막대 탭 = 선택·그 시점으로</span>
+    </div>
+    <div class="tl" id="tl"><div class="tlin" id="tlin"></div></div>
+    <div class="stats" id="stats"></div>
+  </section>
+</div>
+
+<script>
+// 오류는 상태 줄에 그대로 보여준다(폰에서 콘솔을 볼 수 없으므로)
+addEventListener("error", e => { const el = document.getElementById("status"); if (el) { el.textContent = "오류: " + (e.message || e.error); el.classList.add("warn"); } });
+addEventListener("unhandledrejection", e => { const el = document.getElementById("status"); if (el) { el.textContent = "오류: " + ((e.reason && (e.reason.code || e.reason.message)) || e.reason); el.classList.add("warn"); } });
+// 클립 ID·인물은 주소의 #클립ID 와 저장소(labels/<클립ID>.people)에서. 없으면 A~E 기본값.
+const CLIP = (location.hash.slice(1) || "v4_240_180").replace(/[^\w.-]/g, "");
+const COLORS = ["--p1", "--p2", "--p3", "--p4", "--p5", "--p6"];
+let PEOPLE = ["A", "B", "C", "D", "E"].map((id, i) => ({id, desc: "", c: COLORS[i]}));
+const MIN_SEG = 0.15;
+const $ = s => document.querySelector(s);
+const vid = $("#vid"), tl = $("#tl"), tlin = $("#tlin");
+let segs = [];            // {start,end,speakers:[id]}
+const active = {};        // id -> segs 안의 열린 구간(켜진 사람). 켜는 순간 기록하고 끝 시각만 늘린다
+const resumeIds = [];     // 일시정지·이동 때 끊었다가 다시 켤 사람
+let db = null, docRef = null, saving = false, dirty = false, lastSaved = null;
+
+function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+function fmt(t){ if(!isFinite(t)) t = 0; const m = Math.floor(t/60), s = (t%60).toFixed(1).padStart(4,"0"); return `${m}:${s}`; }
+
+// 얼굴 타일(모자이크 영상: 3열, people 순서): 얼굴을 누르고 있으면 그 사람이 말하는 중
+const tilesEl = $("#tiles");
+function buildTiles(on) {
+  tilesEl.innerHTML = ""; tilesEl.hidden = !on;
+  if (!on) return;
+  PEOPLE.forEach(p => {
+    const el = document.createElement("div");
+    el.className = "tile"; el.id = "tile-" + p.id; el.style.setProperty("--c", `var(${p.c})`);
+    const tag = document.createElement("span"); tag.className = "tag"; tag.textContent = p.id;
+    if (p.desc) { const d = document.createElement("span"); d.className = "d"; d.textContent = " " + p.desc; tag.appendChild(d); }
+    el.appendChild(tag);
+    holdable(el, p.id);
+    tilesEl.appendChild(el);
+  });
+}
+// 탭 = 전환(그 사람만 켜기, 이미 켜져 있으면 끄기) · 길게(0.5초) = 겹침 추가/제거
+function holdable(el, id) {
+  // 탭은 click(모든 브라우저·앱 웹뷰에서 확실히 옴), 길게 누르기만 타이머. 길게 눌렀으면 뒤따르는 click은 무시
+  let timer = null, long = false;
+  const cancel = () => { if (timer) { clearTimeout(timer); timer = null; } };
+  el.addEventListener("pointerdown", () => {
+    long = false; cancel();
+    timer = setTimeout(() => { timer = null; long = true; toggleExtra(id); navigator.vibrate?.(30); }, 500);
+  });
+  ["pointerup", "pointercancel", "pointerleave"].forEach(ev => el.addEventListener(ev, cancel));
+  el.addEventListener("click", e => {
+    if (e.target.tagName === "INPUT") return;
+    e.preventDefault();
+    if (long) { long = false; return; }
+    switchTo(id);
+  });
+  el.addEventListener("contextmenu", e => e.preventDefault());
+}
+
+// 키 패드
+const keysEl = $("#keys");
+function buildKeys() {
+keysEl.innerHTML = "";
+PEOPLE.forEach((p, i) => {
+  const el = document.createElement("div");
+  el.className = "key"; el.id = "key-" + p.id; el.style.setProperty("--c", `var(${p.c})`);
+  el.innerHTML = `<span class="dot"></span><kbd>${i+1}</kbd><span class="who"><b>${p.id}</b><input class="desc" id="desc-${p.id}" placeholder="누구인지 메모"></span>`;
+  const inp = el.querySelector("input"); inp.value = p.desc;
+  inp.addEventListener("pointerdown", e => e.stopPropagation());
+  inp.addEventListener("change", () => { p.desc = inp.value; changed(); if (!tilesEl.hidden) buildTiles(true); });
+  holdable(el, p.id);
+  keysEl.appendChild(el);
+});
+}
+buildKeys();
+
+const r2 = t => +t.toFixed(2);
+function mark(id, on){ $("#key-" + id)?.classList.toggle("on", on); $("#tile-" + id)?.classList.toggle("on", on); }
+function openSeg(id, t){
+  if (active[id]) return;
+  const seg = {start: r2(t), end: r2(t), speakers: [id]};
+  segs.push(seg); active[id] = seg; mark(id, true); changed();
+}
+function closeSeg(id, t){
+  const seg = active[id]; if (!seg) return;
+  delete active[id]; mark(id, false);
+  seg.end = r2(Math.max(seg.start, t));
+  if (seg.end - seg.start < MIN_SEG) segs.splice(segs.indexOf(seg), 1);   // 실수 탭(0.15초 미만)만 버림
+  changed();
+}
+function switchTo(id){
+  const t = vid.currentTime, wasOn = !!active[id], others = Object.keys(active).filter(k => k !== id);
+  others.forEach(k => closeSeg(k, t));
+  if (wasOn && !others.length) closeSeg(id, t); else openSeg(id, t);
+  if (vid.paused && vid.src && active[id]) vid.play();                     // 켜면 재생 시작
+}
+function toggleExtra(id){ active[id] ? closeSeg(id, vid.currentTime) : openSeg(id, vid.currentTime); }
+function closeAll(t, remember){
+  const ids = Object.keys(active);
+  if (remember) { resumeIds.length = 0; resumeIds.push(...ids); }
+  ids.forEach(k => closeSeg(k, t));
+}
+// 재생 중 끝 시각을 계속 늘려 둔다 → 저장된 기록이 항상 최신, 손 떼도 사라지지 않음
+let lastT = 0, lastSave = 0;
+vid.addEventListener("timeupdate", () => {
+  if (!vid.seeking) lastT = vid.currentTime;
+  const ids = Object.keys(active);
+  ids.forEach(k => active[k].end = r2(Math.max(active[k].start, vid.currentTime)));
+  if (ids.length && performance.now() - lastSave > 3000) { lastSave = performance.now(); changed(); }
+});
+
+addEventListener("keydown", e => {
+  if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
+  const n = parseInt(e.key, 10);
+  if (e.repeat) return;
+  if (e.key === "0") { e.preventDefault(); closeAll(vid.currentTime, false); return; }
+  const code = /^Digit(\d)$/.exec(e.code), d = code ? +code[1] : n;
+  if (d >= 1 && d <= PEOPLE.length) { e.preventDefault(); e.shiftKey ? toggleExtra(PEOPLE[d-1].id) : switchTo(PEOPLE[d-1].id); return; }
+  if (e.code === "Space") { e.preventDefault(); togglePlay(); }
+  else if (e.key === "ArrowLeft") { vid.currentTime = Math.max(0, vid.currentTime - 2); }
+  else if (e.key === "ArrowRight") { vid.currentTime = Math.min(vid.duration || 0, vid.currentTime + 2); }
+  else if (e.key === "Backspace") { e.preventDefault(); undo(); }
+});
+
+
+function togglePlay(){ if (!vid.src) return; vid.paused ? vid.play() : vid.pause(); }
+function undo(){
+  if (!segs.length) return;
+  const seg = segs.pop();
+  Object.keys(active).forEach(k => { if (active[k] === seg) { delete active[k]; mark(k, false); } });
+  changed();
+}
+$("#play").onclick = togglePlay;
+$("#undo").onclick = undo;
+$("#rate").onchange = e => vid.playbackRate = +e.target.value;
+vid.onplay = () => { $("#play").textContent = "정지"; resumeIds.splice(0).forEach(k => openSeg(k, vid.currentTime)); };
+vid.onpause = () => { $("#play").textContent = "재생"; closeAll(vid.currentTime, true); };
+vid.addEventListener("seeking", () => {                                   // 이동: 원래 위치에서 끊고, 재생 중이면 새 위치에서 다시 켬
+  const ids = Object.keys(active); if (!ids.length) return;
+  ids.forEach(k => closeSeg(k, lastT));
+  if (!vid.paused) ids.forEach(k => openSeg(k, vid.currentTime)); else { resumeIds.length = 0; resumeIds.push(...ids); }
+});
+$("#file").onchange = e => {
+  const f = e.target.files[0]; if (!f) return;
+  vid.src = URL.createObjectURL(f);
+  $("#fileHint").textContent = f.name;
+  buildTiles(/label_mobile/.test(f.name));
+};
+
+// 타임라인 편집기: 인물별 레인, 막대 추가·트림·이동·삭제 (가로 스크롤, 확대/축소)
+const PAD = 34;                 // 왼쪽 이름표 폭
+let PPS = 30;                   // 1초당 px
+let sel = null;                 // 선택된 구간
+let dragging = false;
+const X = t => PAD + t * PPS, T = x => (x - PAD) / PPS;
+const dur = () => vid.duration || 180;
+const ph = document.createElement("div"); ph.className = "ph";
+
+function render(){
+  const D = dur(), W = Math.ceil(X(D)) + 40;
+  tlin.style.width = W + "px";
+  tlin.innerHTML = "";
+  const ruler = document.createElement("div"); ruler.className = "ruler"; ruler.style.width = W + "px";
+  const step = PPS >= 40 ? 2 : PPS >= 20 ? 5 : 10;
+  for (let t = 0; t <= D; t += step) {
+    const k = document.createElement("span"); k.className = "tick"; k.style.left = X(t) + "px"; k.textContent = fmt(t).replace(".0", "");
+    ruler.appendChild(k);
+  }
+  tlin.appendChild(ruler);
+  PEOPLE.forEach(p => {
+    const lane = document.createElement("div"); lane.className = "lane"; lane.style.setProperty("--c", `var(${p.c})`); lane.dataset.id = p.id;
+    const nm = document.createElement("span"); nm.className = "nm"; nm.textContent = p.id; lane.appendChild(nm);
+    segs.forEach(sg => {
+      if (!sg.speakers.includes(p.id)) return;
+      const el = document.createElement("div"); el.className = "seg" + (sg === sel ? " sel" : "");
+      el.style.left = X(sg.start) + "px"; el.style.width = Math.max(4, (sg.end - sg.start) * PPS) + "px";
+      const hl = document.createElement("span"); hl.className = "h l"; const hr = document.createElement("span"); hr.className = "h r";
+      el.append(hl, hr);
+      bindSeg(el, sg, hl, hr);
+      lane.appendChild(el);
+    });
+    // 빈 곳 탭 → 그 시각부터 2초 구간 추가 (스크롤과 구분하려고 click 사용)
+    lane.addEventListener("click", e => {
+      if (e.target !== lane) return;
+      const r = tlin.getBoundingClientRect(), t = Math.max(0, Math.min(D - 0.2, T(e.clientX - r.left)));
+      const sg = {start: r2(t), end: r2(Math.min(D, t + 2)), speakers: [p.id]};
+      segs.push(sg); sel = sg; changed();
+    });
+    tlin.appendChild(lane);
+  });
+  tlin.appendChild(ph);
+  $("#del").disabled = !sel;
+}
+
+function bindSeg(el, sg, hl, hr){
+  // 끌기: 양끝 = 트림, 가운데 = 이동. 거의 안 움직이면 탭 = 선택 + 그 시점으로 이동
+  let mode = null, x0 = 0, s0 = 0, e0 = 0, moved = false;
+  const down = (m) => e => {
+    e.preventDefault(); e.stopPropagation();
+    mode = m; x0 = e.clientX; s0 = sg.start; e0 = sg.end; moved = false; dragging = true;
+    el.setPointerCapture?.(e.pointerId);
+  };
+  hl.addEventListener("pointerdown", down("l")); hr.addEventListener("pointerdown", down("r"));
+  el.addEventListener("pointerdown", e => { if (e.target === el) down("m")(e); });
+  el.addEventListener("pointermove", e => {
+    if (!mode) return;
+    const dt = (e.clientX - x0) / PPS;
+    if (Math.abs(e.clientX - x0) > 4) moved = true;
+    if (!moved) return;
+    const D = dur(), MIN = 0.2;
+    if (mode === "l") sg.start = r2(Math.max(0, Math.min(e0 - MIN, s0 + dt)));
+    else if (mode === "r") sg.end = r2(Math.min(D, Math.max(s0 + MIN, e0 + dt)));
+    else { const len = e0 - s0, ns = Math.max(0, Math.min(D - len, s0 + dt)); sg.start = r2(ns); sg.end = r2(ns + len); }
+    el.style.left = X(sg.start) + "px"; el.style.width = Math.max(4, (sg.end - sg.start) * PPS) + "px";
+    if (vid.src && mode !== "m") vid.currentTime = mode === "l" ? sg.start : sg.end;   // 트림 중 그 지점 화면을 보여줌
+  });
+  const up = () => {
+    if (!mode) return;
+    const m = mode; mode = null; dragging = false;
+    if (moved) { Object.keys(active).forEach(k => { if (active[k] === sg) { delete active[k]; mark(k, false); } }); sel = sg; changed(); }
+    else if (m === "m") { sel = sg; if (vid.src) vid.currentTime = sg.start; render(); }
+  };
+  el.addEventListener("pointerup", up); el.addEventListener("pointercancel", up);
+}
+
+function deleteSel(){
+  if (!sel) return;
+  const k = segs.indexOf(sel);
+  if (k >= 0) segs.splice(k, 1);
+  Object.keys(active).forEach(a => { if (active[a] === sel) { delete active[a]; mark(a, false); } });
+  sel = null; changed();
+}
+$("#del").onclick = deleteSel;
+const zoom = f => {
+  const center = T(tl.scrollLeft + tl.clientWidth / 2);
+  PPS = Math.max(8, Math.min(120, PPS * f)); render();
+  tl.scrollLeft = X(center) - tl.clientWidth / 2;
+};
+$("#zin").onclick = () => zoom(1.5); $("#zout").onclick = () => zoom(1 / 1.5);
+vid.addEventListener("loadedmetadata", render);
+
+// 재생 위치 표시 + 재생 중이면 따라 스크롤 (끌고 있을 땐 멈춤)
+let lastRender = 0;
+function tick(){
+  ph.style.left = X(vid.currentTime) + "px";
+  if (!vid.paused && !dragging) {
+    const x = X(vid.currentTime);
+    if (x < tl.scrollLeft + PAD + 10 || x > tl.scrollLeft + tl.clientWidth - 40) tl.scrollLeft = x - tl.clientWidth * 0.3;
+    if (Object.keys(active).length && performance.now() - lastRender > 250) { lastRender = performance.now(); render(); }   // 켜진 구간 늘어나는 모습
+  }
+  $("#time").textContent = `${fmt(vid.currentTime)} / ${fmt(vid.duration)}`;
+  requestAnimationFrame(tick);
+}
+
+function stats(){
+  const per = {}; PEOPLE.forEach(p => per[p.id] = 0);
+  segs.forEach(s => s.speakers.forEach(id => per[id] += s.end - s.start));
+  $("#stats").innerHTML = "";
+  [`표시 ${segs.length}개`, ...PEOPLE.map(p => `${p.id} ${per[p.id].toFixed(1)}초`)].forEach(t => {
+    const s = document.createElement("span"); s.textContent = t; $("#stats").appendChild(s);
+  });
+}
+
+// 저장: 표시가 바뀔 때마다 한 번에 한 건씩
+const LS = "orbcut-labels-" + CLIP;
+function changed(){
+  stats(); dirty = true; if (!dragging) render();
+  try { localStorage.setItem(LS, labelsJson()); } catch (e) { /* 사본은 편의용 — 실패해도 진행 */ }
+  flush();
+}
+async function flush(){
+  if (!docRef || saving || !dirty) { if (!docRef) setStatus(`저장소 없음 — 표시 ${segs.length}개, 'labels.json 저장'으로 내려받으세요`, true); return; }
+  saving = true; dirty = false;
+  try {
+    await docRef.set({clip: CLIP, people: PEOPLE.map(p => p.id), people_desc: Object.fromEntries(PEOPLE.map(p => [p.id, p.desc])),
+                      duration: +(vid.duration || 180).toFixed(2),
+                      segments: segs, updatedAt: new Date().toISOString()});
+    lastSaved = new Date(); setStatus(`저장됨 <b>${lastSaved.toLocaleTimeString()}</b> · 표시 ${segs.length}개`);
+  } catch (e) {
+    dirty = true; setStatus(`저장 실패: ${e && (e.code || e.message) || e} — 다시 표시하면 재시도합니다`, true);
+  } finally { saving = false; if (dirty) setTimeout(flush, 800); }
+}
+function labelsJson(){
+  return JSON.stringify({clip: CLIP, people: PEOPLE.map(p => p.id), people_desc: Object.fromEntries(PEOPLE.map(p => [p.id, p.desc])),
+                         duration: +(vid.duration || 180).toFixed(2), segments: segs}, null, 1);
+}
+// 저장소 없이 일반 브라우저로 열었을 때(공개본): 파일로 내려받아 `python -m orbcut eval edit.json labels.json`
+$("#export").onclick = () => {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([labelsJson()], {type: "application/json"}));
+  a.download = `labels_${CLIP}.json`; a.click();
+};
+function setStatus(html, warn){ const el = $("#status"); el.innerHTML = html; el.classList.toggle("warn", !!warn); }
+
+(async () => {
+  try { db = await window.claude?.use?.("db"); } catch (e) { db = null; }
+  if (!db) { $("#export").hidden = false; setStatus("저장소 없음 — 다 표시한 뒤 'labels.json 저장'으로 내려받으세요", true); return; }
+  docRef = db.doc("labels/" + CLIP);
+  try {
+    const snap = await docRef.get();
+    const d = snap.data && snap.data();
+    if (d && Array.isArray(d.people) && d.people.length) {
+      PEOPLE = d.people.map((id, i) => ({id, desc: (d.people_desc || {})[id] || "", c: COLORS[i % COLORS.length]}));
+      buildKeys();
+    }
+    // 저장소가 돌려주는 데이터는 읽기 전용(고정 객체) — 그대로 push하면 "object is not extensible"로 표시가 전부 사라졌다
+    if (d && Array.isArray(d.segments)) { segs = d.segments.map(x => ({start: x.start, end: x.end, speakers: [...x.speakers]})); stats(); }
+    // 저장소가 비었는데 이 기기 사본이 있으면 복구(저장 실패했던 표시)
+    let local = null;
+    try { local = JSON.parse(localStorage.getItem(LS) || "null"); } catch (e) { local = null; }
+    if (!segs.length && local && Array.isArray(local.segments) && local.segments.length) { segs = local.segments.map(x => ({start: x.start, end: x.end, speakers: [...x.speakers]})); stats(); dirty = true; flush(); }
+    // 영상: 저장소 clips/<클립ID>.video (모자이크 영상 주소) — 폰에서 파일을 고를 필요 없음
+    let clip = null;
+    try { const c = await db.doc("clips/" + CLIP).get(); clip = c.data && c.data(); } catch (e) { clip = null; }
+    if (clip && clip.video) { vid.src = clip.video; buildTiles(clip.layout === "tiles3"); }
+    render();
+    setStatus((d ? `이전 표시 <b>${segs.length}개</b> 불러옴` : "새 라벨") + (clip && clip.video ? " · 영상 준비됨" : " — 영상 파일을 고르세요"), !(clip && clip.video));
+  } catch (e) { setStatus("이전 표시를 불러오지 못했습니다: " + (e.code || e.message), true); }
+})();
+
+stats(); render(); requestAnimationFrame(tick);
+</script>

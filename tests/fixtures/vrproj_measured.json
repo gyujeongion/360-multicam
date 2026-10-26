@@ -1,0 +1,16 @@
+{
+ "note": "프리미어 26.5 VR 투영 실측(2026-10-24). 3840x1920 등장방형 클립, 1920x1080 시퀀스. export_frame 출력을 원본 프레임에서 재현하는 시선을 NCC 최대화로 피팅(원격 작업 머신).",
+ "pan_only": [
+  {"pan": 0, "tilt": 0, "roll": 0, "fit_yaw": 0.0, "fit_pitch": 0.0, "fit_hfov": 90.0, "fit_vfov": 45.0, "ncc": 0.999},
+  {"pan": 60, "tilt": 0, "roll": 0, "fit_yaw": 59.9, "fit_pitch": 0.1, "fit_hfov": 90.0, "fit_vfov": 50.62, "ncc": 1.0},
+  {"pan": 88.5, "tilt": 0, "roll": 0, "fit_yaw": 88.5, "fit_pitch": 0.0, "fit_hfov": 90.0, "fit_vfov": 44.91, "ncc": 1.0, "comment": "키 0→90(2초) 보간 중 1.968초 프레임"},
+  {"pan": 180, "tilt": 0, "roll": 0, "fit_yaw": -180.1, "fit_pitch": 0.1, "ncc": 0.999, "comment": "200을 넣으면 180으로 잘림"}
+ ],
+ "order": {"best": "Rz(roll)·Rx(tilt)·Ry(pan)", "ncc": [0.998, 0.999, 0.998], "runner_up_ncc": [0.679, 0.252]},
+ "engine_targets": [
+  {"yaw": 95.5, "pitch": 20, "premiere": [95.17, -1.88, -19.92], "fit_yaw": 95.45, "fit_pitch": 20.05, "fit_roll": 0.0, "ncc": 0.9995},
+  {"yaw": -40, "pitch": -15, "premiere": [-40.98, -11.44, -9.77], "fit_yaw": -40.05, "fit_pitch": -14.95, "fit_roll": 0.0, "ncc": 0.9995}
+ ],
+ "keyframes_face_center": {"clip": "multicam_car 인물 C, 64키 0.5초 간격, hfov 70",
+  "times": [1, 6, 11.25, 16, 27], "dx_pct": [0.9, -2.6, 2.0, -3.2, -0.9], "dy_pct": [2.1, -0.5, -0.9, -5.8, -0.5]}
+}

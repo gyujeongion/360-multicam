@@ -1,0 +1,54 @@
+{
+ "frames": [
+  {
+   "t": 0.967,
+   "dx_pct": 0.04,
+   "dy_pct": -0.42,
+   "w_ratio": 0.859,
+   "sharp_ratio": 19.9
+  },
+  {
+   "t": 5.972,
+   "dx_pct": 0.39,
+   "dy_pct": 1.4,
+   "w_ratio": 0.829,
+   "sharp_ratio": 20.79
+  },
+  {
+   "t": 11.245,
+   "dx_pct": -1.6,
+   "dy_pct": 0.79,
+   "w_ratio": 1.114,
+   "sharp_ratio": 17.51
+  },
+  {
+   "t": 15.983,
+   "dx_pct": 0.37,
+   "dy_pct": 0.64,
+   "w_ratio": 0.913,
+   "sharp_ratio": 24.88
+  },
+  {
+   "t": 26.993,
+   "dx_pct": 2.34,
+   "dy_pct": -0.7,
+   "w_ratio": 1.052,
+   "sharp_ratio": 7.87
+  }
+ ],
+ "center_diff_pct": [
+  0.04,
+  -0.42,
+  0.39,
+  1.4,
+  -1.6,
+  0.79,
+  0.37,
+  0.64,
+  2.34,
+  -0.7
+ ],
+ "sharpness_ratio": 19.9,
+ "size_ratio": 0.913,
+ "note": "2026-10-24 테스트 시퀀스(multicam_car 인물 C, 64키) 원격 렌더 32초 123초. 미리보기 = 프리미어 export_frame(4K 파노라마+VR 투영), 렌더 = orbcut.swap(원본 8K, 직선 원근). 선명도 비 = 얼굴 상자 Laplacian 분산. 렌더는 DynamicProjector(페더, 플로우 없음)라 이음새 위 인물 이중상은 미리보기와 같이 남음"
+}

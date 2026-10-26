@@ -1,0 +1,441 @@
+{
+ "clip": "v4_240_180 (원형 테이블 4:00~7:00)",
+ "people": [
+  "A",
+  "B",
+  "C",
+  "D",
+  "E"
+ ],
+ "duration": 181.79,
+ "source": "사람 정답 라벨(에이블톤 MIDI 클립, 템포 120)",
+ "segments": [
+  {
+   "start": 0.0,
+   "end": 12.0,
+   "speakers": [
+    "E"
+   ]
+  },
+  {
+   "start": 12.244,
+   "end": 14.776,
+   "speakers": [
+    "C"
+   ]
+  },
+  {
+   "start": 14.637,
+   "end": 15.75,
+   "speakers": [
+    "D"
+   ]
+  },
+  {
+   "start": 15.0,
+   "end": 15.75,
+   "speakers": [
+    "E"
+   ]
+  },
+  {
+   "start": 15.694,
+   "end": 19.089,
+   "speakers": [
+    "C"
+   ]
+  },
+  {
+   "start": 18.588,
+   "end": 21.927,
+   "speakers": [
+    "D"
+   ]
+  },
+  {
+   "start": 19.117,
+   "end": 20.146,
+   "speakers": [
+    "E"
+   ]
+  },
+  {
+   "start": 20.5,
+   "end": 21.621,
+   "speakers": [
+    "C"
+   ]
+  },
+  {
+   "start": 22.651,
+   "end": 26.686,
+   "speakers": [
+    "D"
+   ]
+  },
+  {
+   "start": 27.966,
+   "end": 33.392,
+   "speakers": [
+    "E"
+   ]
+  },
+  {
+   "start": 34.811,
+   "end": 36.453,
+   "speakers": [
+    "B"
+   ]
+  },
+  {
+   "start": 36.369,
+   "end": 37.622,
+   "speakers": [
+    "A"
+   ]
+  },
+  {
+   "start": 38.957,
+   "end": 40.043,
+   "speakers": [
+    "C"
+   ]
+  },
+  {
+   "start": 39.931,
+   "end": 53.316,
+   "speakers": [
+    "E"
+   ]
+  },
+  {
+   "start": 52.231,
+   "end": 53.093,
+   "speakers": [
+    "C"
+   ]
+  },
+  {
+   "start": 53.928,
+   "end": 56.293,
+   "speakers": [
+    "E"
+   ]
+  },
+  {
+   "start": 56.071,
+   "end": 57.212,
+   "speakers": [
+    "A"
+   ]
+  },
+  {
+   "start": 57.184,
+   "end": 62.721,
+   "speakers": [
+    "E"
+   ]
+  },
+  {
+   "start": 59.911,
+   "end": 63.0,
+   "speakers": [
+    "C"
+   ]
+  },
+  {
+   "start": 63.139,
+   "end": 65.949,
+   "speakers": [
+    "E"
+   ]
+  },
+  {
+   "start": 65.17,
+   "end": 67.786,
+   "speakers": [
+    "D"
+   ]
+  },
+  {
+   "start": 65.893,
+   "end": 69.5,
+   "speakers": [
+    "A"
+   ]
+  },
+  {
+   "start": 69.334,
+   "end": 71.334,
+   "speakers": [
+    "E"
+   ]
+  },
+  {
+   "start": 69.917,
+   "end": 71.292,
+   "speakers": [
+    "D"
+   ]
+  },
+  {
+   "start": 72.332,
+   "end": 75.772,
+   "speakers": [
+    "E"
+   ]
+  },
+  {
+   "start": 75.5,
+   "end": 78.388,
+   "speakers": [
+    "A"
+   ]
+  },
+  {
+   "start": 77.0,
+   "end": 78.471,
+   "speakers": [
+    "E"
+   ]
+  },
+  {
+   "start": 79.5,
+   "end": 82.369,
+   "speakers": [
+    "B"
+   ]
+  },
+  {
+   "start": 82.0,
+   "end": 84.0,
+   "speakers": [
+    "A"
+   ]
+  },
+  {
+   "start": 84.5,
+   "end": 88.183,
+   "speakers": [
+    "C"
+   ]
+  },
+  {
+   "start": 87.5,
+   "end": 90.854,
+   "speakers": [
+    "D"
+   ]
+  },
+  {
+   "start": 90.0,
+   "end": 95.724,
+   "speakers": [
+    "C"
+   ]
+  },
+  {
+   "start": 91.723,
+   "end": 94.165,
+   "speakers": [
+    "A"
+   ]
+  },
+  {
+   "start": 96.194,
+   "end": 96.753,
+   "speakers": [
+    "E"
+   ]
+  },
+  {
+   "start": 96.833,
+   "end": 98.2,
+   "speakers": [
+    "B"
+   ]
+  },
+  {
+   "start": 98.333,
+   "end": 100.333,
+   "speakers": [
+    "C"
+   ]
+  },
+  {
+   "start": 100.555,
+   "end": 103.821,
+   "speakers": [
+    "A"
+   ]
+  },
+  {
+   "start": 101.083,
+   "end": 102.764,
+   "speakers": [
+    "C"
+   ]
+  },
+  {
+   "start": 104.223,
+   "end": 113.922,
+   "speakers": [
+    "E"
+   ]
+  },
+  {
+   "start": 108.5,
+   "end": 109.5,
+   "speakers": [
+    "A"
+   ]
+  },
+  {
+   "start": 113.0,
+   "end": 132.789,
+   "speakers": [
+    "B"
+   ]
+  },
+  {
+   "start": 117.0,
+   "end": 119.0,
+   "speakers": [
+    "E"
+   ]
+  },
+  {
+   "start": 130.0,
+   "end": 131.286,
+   "speakers": [
+    "A"
+   ]
+  },
+  {
+   "start": 135.39,
+   "end": 139.94,
+   "speakers": [
+    "B"
+   ]
+  },
+  {
+   "start": 139.11,
+   "end": 142.584,
+   "speakers": [
+    "E"
+   ]
+  },
+  {
+   "start": 141.277,
+   "end": 152.156,
+   "speakers": [
+    "C"
+   ]
+  },
+  {
+   "start": 147.5,
+   "end": 149.0,
+   "speakers": [
+    "B"
+   ]
+  },
+  {
+   "start": 151.638,
+   "end": 153.046,
+   "speakers": [
+    "B"
+   ]
+  },
+  {
+   "start": 153.0,
+   "end": 154.299,
+   "speakers": [
+    "E"
+   ]
+  },
+  {
+   "start": 154.47,
+   "end": 155.829,
+   "speakers": [
+    "A"
+   ]
+  },
+  {
+   "start": 156.249,
+   "end": 157.749,
+   "speakers": [
+    "C"
+   ]
+  },
+  {
+   "start": 157.332,
+   "end": 161.227,
+   "speakers": [
+    "A"
+   ]
+  },
+  {
+   "start": 161.194,
+   "end": 168.694,
+   "speakers": [
+    "B"
+   ]
+  },
+  {
+   "start": 161.277,
+   "end": 162.007,
+   "speakers": [
+    "E"
+   ]
+  },
+  {
+   "start": 164.0,
+   "end": 178.73,
+   "speakers": [
+    "E"
+   ]
+  },
+  {
+   "start": 166.832,
+   "end": 169.882,
+   "speakers": [
+    "A"
+   ]
+  },
+  {
+   "start": 173.0,
+   "end": 178.063,
+   "speakers": [
+    "C"
+   ]
+  },
+  {
+   "start": 173.11,
+   "end": 175.892,
+   "speakers": [
+    "D"
+   ]
+  },
+  {
+   "start": 177.917,
+   "end": 180.15,
+   "speakers": [
+    "B"
+   ]
+  },
+  {
+   "start": 179.86,
+   "end": 181.764,
+   "speakers": [
+    "C"
+   ]
+  },
+  {
+   "start": 179.89,
+   "end": 181.708,
+   "speakers": [
+    "A"
+   ]
+  }
+ ]
+}

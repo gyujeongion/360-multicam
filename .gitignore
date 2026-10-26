@@ -1,0 +1,23 @@
+# 벤더 레포는 패치로 관리
+# 산출물·대용량·개인 영상
+# 역분석 원본 덤프(저작권물·원본 파일 일부) — 공개 금지, 로컬 근거로만 보관
+*.insv
+*.jpg
+*.mkv
+*.mp4
+*.png
+.DS_Store
+.venv/
+Light-ASD/
+__pycache__/
+cache/
+re/*.bin
+re/*.npy
+re/*.npz
+re/*.pkl
+re/*.trailer
+re/*/
+re/extra_metadata.json
+re/shader_*.txt
+work/
+!docs/img/*.jpg

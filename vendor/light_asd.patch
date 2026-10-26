@@ -1,0 +1,132 @@
+diff --git a/ASD.py b/ASD.py
+index 2b7dbf1..d1c9f05 100644
+--- a/ASD.py
++++ b/ASD.py
+@@ -1,4 +1,5 @@
+ import torch
++import torch as _t; DEVICE = "cpu"
+ import torch.nn as nn
+ import torch.nn.functional as F
+ 
+@@ -11,9 +12,9 @@ from model.Model import ASD_Model
+ class ASD(nn.Module):
+     def __init__(self, lr = 0.001, lrDecay = 0.95, **kwargs):
+         super(ASD, self).__init__()        
+-        self.model = ASD_Model().cuda()
+-        self.lossAV = lossAV().cuda()
+-        self.lossV = lossV().cuda()
++        self.model = ASD_Model().to(DEVICE)
++        self.lossAV = lossAV().to(DEVICE)
++        self.lossV = lossV().to(DEVICE)
+         self.optim = torch.optim.Adam(self.parameters(), lr = lr)
+         self.scheduler = torch.optim.lr_scheduler.StepLR(self.optim, step_size = 1, gamma=lrDecay)
+         print(time.strftime("%m-%d %H:%M:%S") + " Model para number = %.2f"%(sum(param.numel() for param in self.model.parameters()) / 1000 / 1000))
+@@ -27,13 +28,13 @@ class ASD(nn.Module):
+         for num, (audioFeature, visualFeature, labels) in enumerate(loader, start=1):
+             self.zero_grad()
+ 
+-            audioEmbed = self.model.forward_audio_frontend(audioFeature[0].cuda())
+-            visualEmbed = self.model.forward_visual_frontend(visualFeature[0].cuda())
++            audioEmbed = self.model.forward_audio_frontend(audioFeature[0].to(DEVICE))
++            visualEmbed = self.model.forward_visual_frontend(visualFeature[0].to(DEVICE))
+ 
+             outsAV= self.model.forward_audio_visual_backend(audioEmbed, visualEmbed)  
+             outsV = self.model.forward_visual_backend(visualEmbed)
+ 
+-            labels = labels[0].reshape((-1)).cuda() # Loss
++            labels = labels[0].reshape((-1)).to(DEVICE) # Loss
+             nlossAV, _, _, prec = self.lossAV.forward(outsAV, labels, r)
+             nlossV = self.lossV.forward(outsV, labels, r)
+             nloss = nlossAV + 0.5 * nlossV
+@@ -59,10 +60,10 @@ class ASD(nn.Module):
+         predScores = []
+         for audioFeature, visualFeature, labels in tqdm.tqdm(loader):
+             with torch.no_grad():                
+-                audioEmbed  = self.model.forward_audio_frontend(audioFeature[0].cuda())
+-                visualEmbed = self.model.forward_visual_frontend(visualFeature[0].cuda())
++                audioEmbed  = self.model.forward_audio_frontend(audioFeature[0].to(DEVICE))
++                visualEmbed = self.model.forward_visual_frontend(visualFeature[0].to(DEVICE))
+                 outsAV= self.model.forward_audio_visual_backend(audioEmbed, visualEmbed)  
+-                labels = labels[0].reshape((-1)).cuda()             
++                labels = labels[0].reshape((-1)).to(DEVICE)             
+                 _, predScore, _, _ = self.lossAV.forward(outsAV, labels)    
+                 predScore = predScore[:,1].detach().cpu().numpy()
+                 predScores.extend(predScore)
+@@ -86,7 +87,7 @@ class ASD(nn.Module):
+ 
+     def loadParameters(self, path):
+         selfState = self.state_dict()
+-        loadedState = torch.load(path)
++        loadedState = torch.load(path, map_location=DEVICE)
+         for name, param in loadedState.items():
+             origName = name;
+             if name not in selfState:
+diff --git a/Columbia_test.py b/Columbia_test.py
+index 5e93dbe..10683e2 100644
+--- a/Columbia_test.py
++++ b/Columbia_test.py
+@@ -13,7 +13,8 @@ from scenedetect.stats_manager import StatsManager
+ from scenedetect.detectors import ContentDetector
+ 
+ from model.faceDetector.s3fd import S3FD
+-from ASD import ASD
++from ASD import ASD, DEVICE
++import torch as _t; FACE_DEVICE = "mps" if _t.backends.mps.is_available() else "cpu"
+ 
+ warnings.filterwarnings("ignore")
+ 
+@@ -90,7 +91,7 @@ def scene_detect(args):
+ 
+ def inference_video(args):
+ 	# GPU: Face detection, output is the list contains the face location and score in this frame
+-	DET = S3FD(device='cuda')
++	DET = S3FD(device=FACE_DEVICE)
+ 	flist = glob.glob(os.path.join(args.pyframesPath, '*.jpg'))
+ 	flist.sort()
+ 	dets = []
+@@ -235,8 +236,8 @@ def evaluate_network(files, args):
+ 			scores = []
+ 			with torch.no_grad():
+ 				for i in range(batchSize):
+-					inputA = torch.FloatTensor(audioFeature[i * duration * 100:(i+1) * duration * 100,:]).unsqueeze(0).cuda()
+-					inputV = torch.FloatTensor(videoFeature[i * duration * 25: (i+1) * duration * 25,:,:]).unsqueeze(0).cuda()
++					inputA = torch.FloatTensor(audioFeature[i * duration * 100:(i+1) * duration * 100,:]).unsqueeze(0).to(DEVICE)
++					inputV = torch.FloatTensor(videoFeature[i * duration * 25: (i+1) * duration * 25,:,:]).unsqueeze(0).to(DEVICE)
+ 					embedA = s.model.forward_audio_frontend(inputA)
+ 					embedV = s.model.forward_visual_frontend(inputV)	
+ 					out = s.model.forward_audio_visual_backend(embedA, embedV)
+@@ -447,7 +448,7 @@ def main():
+ 		quit()
+ 	else:
+ 		# Visualization, save the result as the new video	
+-		visualization(vidTracks, scores, args)	
++		if not os.environ.get("ASD_NOVIS"): visualization(vidTracks, scores, args)	
+ 
+ if __name__ == '__main__':
+     main()
+diff --git a/model/faceDetector/s3fd/box_utils.py b/model/faceDetector/s3fd/box_utils.py
+index 0779bcd..1bf4be2 100644
+--- a/model/faceDetector/s3fd/box_utils.py
++++ b/model/faceDetector/s3fd/box_utils.py
+@@ -35,7 +35,7 @@ def nms_(dets, thresh):
+         inds = np.where(ovr <= thresh)[0]
+         order = order[inds + 1]
+ 
+-    return np.array(keep).astype(np.int)
++    return np.array(keep).astype(int)
+ 
+ 
+ def decode(loc, priors, variances):
+diff --git a/utils/get_ava_active_speaker_performance.py b/utils/get_ava_active_speaker_performance.py
+index 2e66d1d..e82730a 100644
+--- a/utils/get_ava_active_speaker_performance.py
++++ b/utils/get_ava_active_speaker_performance.py
+@@ -41,7 +41,7 @@ def compute_average_precision(precision, recall):
+   if not isinstance(precision, np.ndarray) or not isinstance(
+       recall, np.ndarray):
+     raise ValueError("precision and recall must be numpy array")
+-  if precision.dtype != np.float or recall.dtype != np.float:
++  if precision.dtype != float or recall.dtype != float:
+     raise ValueError("input must be float numpy array.")
+   if len(precision) != len(recall):
+     raise ValueError("precision and recall must be of the same size.")
