@@ -1,5 +1,5 @@
 import sys, cv2, numpy as np
-sys.path.insert(0,'.'); sys.path.insert(0,'orbcut')
+sys.path.insert(0,'.'); sys.path.insert(0,'multicam360')
 from calib import *
 L = parse_offset_v6(offset_v6_from_metadata(read_metadata_bytes('re/tail8m.bin')))
 imgs=[cv2.imread(f're/l{i}.png') for i in (0,1)]

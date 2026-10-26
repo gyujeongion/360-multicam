@@ -2,7 +2,7 @@
 import json, sys
 import cv2, numpy as np
 sys.path.insert(0, ".")
-from orbcut.faces import FaceKit
+from multicam360.faces import FaceKit
 out, pid = sys.argv[1], sys.argv[2]
 rows = json.load(open(f"{out}/paths.json"))["paths"][pid]
 pres = lambda t: rows[min(range(len(rows)), key=lambda k: abs(rows[k][0] - t))][4]

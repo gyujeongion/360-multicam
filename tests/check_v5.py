@@ -10,12 +10,12 @@ if "--remote" in sys.argv:
     from _remote import delegate
     rc = delegate(".venv/bin/python tests/check_v5.py")
     if rc is None:
-        print("원격 호스트 미설정(ORBCUT_REMOTE_HOST) — 로컬에서 실행하려면 --remote 없이"); sys.exit(2)
+        print("원격 호스트 미설정(MULTICAM360_REMOTE_HOST) — 로컬에서 실행하려면 --remote 없이"); sys.exit(2)
     sys.exit(rc)
 
 os.chdir(REPO)
 if not (os.path.exists(os.path.join(OUT, "manifest.json")) and json.load(open(os.path.join(OUT, "manifest.json"))).get("status") == "ok"):
-    r = subprocess.run([sys.executable, "-m", "orbcut", "--json", "all", "work/src_240_180.mkv", "--out", OUT,
+    r = subprocess.run([sys.executable, "-m", "multicam360", "--json", "all", "work/src_240_180.mkv", "--out", OUT,
                         "--meta", "re/tail8m.bin"], capture_output=True, text=True)
     print(r.stdout.strip().splitlines()[-1] if r.stdout else r.stderr[-800:])
 

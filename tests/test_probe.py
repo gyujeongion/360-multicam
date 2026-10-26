@@ -4,15 +4,15 @@ import pytest
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, REPO)
-from orbcut.calib import TRAILER_MAGIC
-from orbcut.pipeline import parse_range
-from orbcut.probe import ProbeError, probe
+from multicam360.calib import TRAILER_MAGIC
+from multicam360.pipeline import parse_range
+from multicam360.probe import ProbeError, probe
 
 META = os.path.join(REPO, "re", "tail8m.bin")
 
 
 def cli(*a):
-    r = subprocess.run([sys.executable, "-m", "orbcut", "--json", *a], cwd=REPO, capture_output=True, text=True)
+    r = subprocess.run([sys.executable, "-m", "multicam360", "--json", *a], cwd=REPO, capture_output=True, text=True)
     return r.returncode, json.loads(r.stdout.strip().splitlines()[-1])
 
 
@@ -68,10 +68,10 @@ def test_range_forms():
 
 
 def test_nas_probe():
-    from orbcut.config import nas_host, test_nas_src
+    from multicam360.config import nas_host, test_nas_src
     NAS = test_nas_src()
     if not NAS:
-        pytest.skip("ORBCUT_TEST_NAS_SRC 미설정")
+        pytest.skip("MULTICAM360_TEST_NAS_SRC 미설정")
     r = subprocess.run(["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=5", nas_host(), "true"], capture_output=True)
     if r.returncode != 0:
         pytest.skip("NAS 접속 불가")

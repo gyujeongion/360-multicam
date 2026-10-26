@@ -3,7 +3,7 @@
 labels.json 형식 (라벨링 도구 출력):
   {"people": ["A","B",...], "duration": 180.0,
    "segments": [{"start": 1.2, "end": 4.8, "speakers": ["C"]}, ...]}   # 겹쳐 말하면 speakers 여러 명
-edit.json: orbcut.cut 출력 {"segments": [{"start","end","cam"}...]}
+edit.json: multicam360.cut 출력 {"segments": [{"start","end","cam"}...]}
 
 지표
 - frame_acc: 누군가 말하는 시간 중, 화면(cam)이 말하는 사람 중 하나인 비율

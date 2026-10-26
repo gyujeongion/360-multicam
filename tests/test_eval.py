@@ -1,7 +1,7 @@
 import json, os, subprocess, sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from orbcut.eval import evaluate
+from multicam360.eval import evaluate
 
 LAB = {"people": ["A", "B", "C"], "duration": 30.0, "segments": [
     {"start": 0, "end": 10, "speakers": ["A"]},
@@ -44,6 +44,6 @@ def test_cli(tmp_path):
     e.write_text(json.dumps({"segments": [{"start": 0, "end": 30, "cam": "B"}]}))
     l.write_text(json.dumps(LAB))
     repo = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    out = subprocess.run([sys.executable, "-m", "orbcut", "--json", "eval", str(e), str(l)], cwd=repo,
+    out = subprocess.run([sys.executable, "-m", "multicam360", "--json", "eval", str(e), str(l)], cwd=repo,
                          capture_output=True, text=True, check=True).stdout
     assert json.loads(out.strip().splitlines()[-1])["frame_acc"] > 0

@@ -4,7 +4,7 @@ import json, math, os
 import numpy as np
 import pytest
 
-from orbcut.vrproj import engine_matrix, motion_scale, path_keys, premiere_matrix, to_vr
+from multicam360.vrproj import engine_matrix, motion_scale, path_keys, premiere_matrix, to_vr
 
 MEAS = json.load(open(os.path.join(os.path.dirname(__file__), "fixtures", "vrproj_measured.json")))
 
@@ -54,7 +54,7 @@ def test_face_centered_measured():
 
 
 def test_vrkeys_cli(tmp_path):
-    from orbcut.__main__ import main
+    from multicam360.__main__ import main
     rows = [[t, 30 + t, -5, True, True] for t in np.arange(0, 3, 0.25)]
     (tmp_path / "paths.json").write_text(json.dumps({"paths": {"A": rows}}))
     assert main(["vrkeys", str(tmp_path), "A", "--hfov", "60"]) == 0

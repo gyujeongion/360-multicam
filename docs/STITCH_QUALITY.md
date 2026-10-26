@@ -1,11 +1,11 @@
 # Stitch quality log — closing the gap to Insta360 Studio
 
-How `orbcut`'s own stitcher (factory calibration + optical-flow seam) was measured against
+How `multicam360`'s own stitcher (factory calibration + optical-flow seam) was measured against
 Insta360 Studio 6.0.6 on the same clip, and what actually moved the numbers. Kept as a record so the
 reasoning survives — including the hypotheses that turned out wrong.
 
 Reference clip: Insta360 X6, 50 s, night-time bar interior, people 1–2 m from the camera, hand-held.
-Studio export: 360 equirect, "optical flow" stitching, 10-bit HEVC. Ours: `python -m orbcut.render panorama`
+Studio export: 360 equirect, "optical flow" stitching, 10-bit HEVC. Ours: `python -m multicam360.render panorama`
 at 7680×3840. Everything below is measured on the same 10 s window of that clip (frames 10–20 s).
 
 ## 1. Measurement
@@ -166,8 +166,8 @@ Final (encoded, 5 s window): seam 1.23, body 0.97, noise 0.04, ΔL −1.2.
    ¼ resolution), α_hi = narrow sigmoid of α, further hardened to one lens where confidence is low.
 8. Encode: BT.709 in/out, `hqdn3d` + `unsharp`, 10-bit HEVC, constant quality.
 
-Every knob is an environment variable (`ORBCUT_FEATHER`, `ORBCUT_FLOW_EMA`, `ORBCUT_FLOW_SMOOTH`,
-`ORBCUT_FLOW_VCLAMP`, `ORBCUT_SEAM_MODE`, `ORBCUT_BAND2_K`, …) so A/B runs do not need code changes.
+Every knob is an environment variable (`MULTICAM360_FEATHER`, `MULTICAM360_FLOW_EMA`, `MULTICAM360_FLOW_SMOOTH`,
+`MULTICAM360_FLOW_VCLAMP`, `MULTICAM360_SEAM_MODE`, `MULTICAM360_BAND2_K`, …) so A/B runs do not need code changes.
 
 ## 3a. Lens 1 roll (fixed 2026-10-26)
 
@@ -211,11 +211,11 @@ Measured on a 32 s tracked clip (70°, 1920×1080, 958 frames, 44 samples):
 - Objects 1–2 m from the camera have real parallax that a rotation-only model cannot resolve. Where the
   flow is unreliable the high frequencies simply come from one lens, which trades a ghost for a small
   geometric step. Fixing that properly needs depth, which is out of scope.
-- Studio's stabilisation and horizon lock are not part of this comparison (`orbcut.track` handles that
+- Studio's stabilisation and horizon lock are not part of this comparison (`multicam360.track` handles that
   separately from the IMU).
 - VideoToolbox allows a limited number of concurrent HEVC encoder sessions (measured on an M2 Ultra:
   4 for 10-bit constant-quality, 5 for 10-bit bitrate, 6+ for 8-bit). A second process using the encoders
-  makes ours fail with `-12912`; `orbcut.render views` now encodes in waves of 4.
+  makes ours fail with `-12912`; `multicam360.render views` now encodes in waves of 4.
 
 ## 5. Reproduce
 

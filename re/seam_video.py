@@ -1,6 +1,6 @@
-"""M15-2: Studio vs orbcut 이음새 구간 나란히 비교 영상(육안 판정용).
+"""M15-2: Studio vs multicam360 이음새 구간 나란히 비교 영상(육안 판정용).
 Studio 영상은 자체 안정화로 프레임마다 방향이 달라지므로 프레임마다 특징점 회전을 추정(5프레임 평활)해 우리 좌표에 맞춘 뒤, 양쪽 렌즈 경계(경도 ±90°) 둘레를 잘라
-2배 확대해 [Studio | orbcut] 가로, 위=왼쪽 이음새·아래=오른쪽 이음새로 쌓는다.
+2배 확대해 [Studio | multicam360] 가로, 위=왼쪽 이음새·아래=오른쪽 이음새로 쌓는다.
 usage: python re/seam_video.py <studio.mp4> <ours.mp4> <out.mp4> --start 10 --dur 10 [--offset 10]"""
 import argparse, os, subprocess, sys
 
@@ -59,7 +59,7 @@ def main():
         rows = []
         for cx, cy in crops:
             tiles = []
-            for img, name in ((st, "Insta360 Studio"), (ou, "orbcut")):
+            for img, name in ((st, "Insta360 Studio"), (ou, "multicam360")):
                 c = img[cy - CH // 2: cy + CH // 2, cx - CW // 2: cx + CW // 2]
                 tiles.append(label(cv2.resize(c, (CW * ZOOM, CH * ZOOM), interpolation=cv2.INTER_CUBIC), name))
             rows.append(np.hstack(tiles))

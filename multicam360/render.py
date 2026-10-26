@@ -1,8 +1,8 @@
 """엔진으로 원본(듀얼 어안)에서 직접 렌더: 파노라마 / 인물 앵글 / 4K 마스터.
 
 usage:
-  python -m orbcut.render panorama <src> <out.mp4> --meta M [--width 3840]
-  python -m orbcut.render views <src> <people.json> <out_dir> --meta M --hfov 70 --w 1920 --h 1080 --pitch 0
+  python -m multicam360.render panorama <src> <out.mp4> --meta M [--width 3840]
+  python -m multicam360.render views <src> <people.json> <out_dir> --meta M --hfov 70 --w 1920 --h 1080 --pitch 0
         [--bitrate 12M] [--flow] [--jobs N]
 views는 인물마다 cam_<ID>.mp4 + render.json(실제 화각 기록). --jobs: 병렬 프로세스 수(인물 단위 분할).
 """
@@ -20,12 +20,12 @@ def render_json(a, out_dir, tracked=False):
     vfov = (2 * math.degrees(math.atan((a.h / 2) / pannini_scale(a.hfov, a.w, a.pannini_d))) if pann
             else rect_vfov(a.hfov, a.w, a.h))
     json.dump({"hfov": a.hfov, "vfov": vfov, "pitch": a.pitch, "w": a.w, "h": a.h, "src": a.src,
-               "engine": "orbcut.engine", "flow": getattr(a, "flow", False), "proj": getattr(a, "proj", "flat"),
+               "engine": "multicam360.engine", "flow": getattr(a, "flow", False), "proj": getattr(a, "proj", "flat"),
                "pannini_d": a.pannini_d if pann else 0, "tracked": tracked},
               open(os.path.join(out_dir, "render.json"), "w"), indent=2)
 
 
-MAX_HW_ENC = int(os.environ.get("ORBCUT_MAX_ENC", 4))   # 동시 하드웨어 인코딩 수 상한(track.py와 동일. M2 Ultra 실측: 10비트 -q:v는 4, 비트레이트 5, 8비트 6+)
+MAX_HW_ENC = int(os.environ.get("MULTICAM360_MAX_ENC", 4))   # 동시 하드웨어 인코딩 수 상한(track.py와 동일. M2 Ultra 실측: 10비트 -q:v는 4, 비트레이트 5, 8비트 6+)
 
 
 def main(argv=None):
@@ -59,7 +59,7 @@ def main(argv=None):
     os.makedirs(a.out_dir, exist_ok=True)
     if a.jobs > 1 and not a.only:   # 인물 단위로 나눠 하위 프로세스 병렬 실행
         ids = [p["id"] for p in people]
-        clean, skip = [sys.executable, "-m", "orbcut.render"], False
+        clean, skip = [sys.executable, "-m", "multicam360.render"], False
         for x in (argv or sys.argv[1:]):         # 하위 프로세스엔 --jobs N 을 빼고 그대로 전달
             if skip: skip = False; continue
             if x == "--jobs": skip = True; continue

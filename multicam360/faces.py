@@ -7,7 +7,7 @@ import hashlib, os, urllib.request
 import cv2
 import numpy as np
 
-CACHE = os.path.expanduser("~/.cache/orbcut/models")
+CACHE = os.path.expanduser("~/.cache/multicam360/models")
 MODELS = {
     "yunet": ("face_detection_yunet_2023mar.onnx",
               "https://github.com/opencv/opencv_zoo/raw/main/models/face_detection_yunet/face_detection_yunet_2023mar.onnx",

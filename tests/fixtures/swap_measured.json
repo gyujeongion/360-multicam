@@ -50,5 +50,5 @@
  ],
  "sharpness_ratio": 19.9,
  "size_ratio": 0.913,
- "note": "2026-10-24 테스트 시퀀스(multicam_car 인물 C, 64키) 원격 렌더 32초 123초. 미리보기 = 프리미어 export_frame(4K 파노라마+VR 투영), 렌더 = orbcut.swap(원본 8K, 직선 원근). 선명도 비 = 얼굴 상자 Laplacian 분산. 렌더는 DynamicProjector(페더, 플로우 없음)라 이음새 위 인물 이중상은 미리보기와 같이 남음"
+ "note": "2026-10-24 테스트 시퀀스(multicam_car 인물 C, 64키) 원격 렌더 32초 123초. 미리보기 = 프리미어 export_frame(4K 파노라마+VR 투영), 렌더 = multicam360.swap(원본 8K, 직선 원근). 선명도 비 = 얼굴 상자 Laplacian 분산. 렌더는 DynamicProjector(페더, 플로우 없음)라 이음새 위 인물 이중상은 미리보기와 같이 남음"
 }

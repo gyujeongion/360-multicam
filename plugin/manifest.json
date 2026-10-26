@@ -1,15 +1,15 @@
 {
   "manifestVersion": 5,
-  "id": "dev.orbcut.panel",
-  "name": "orbcut",
+  "id": "dev.multicam360.panel",
+  "name": "multicam360",
   "version": "0.2.0",
   "main": "index.html",
   "host": { "app": "premierepro", "minVersion": "25.6.0" },
   "entrypoints": [
     {
       "type": "panel",
-      "id": "orbcutPanel",
-      "label": { "default": "orbcut" },
+      "id": "multicam360Panel",
+      "label": { "default": "multicam360" },
       "minimumSize": { "width": 280, "height": 360 },
       "preferredDockedSize": { "width": 320, "height": 560 }
     }

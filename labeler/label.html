@@ -89,7 +89,7 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid 
     <details class="alt"><summary>다른 영상 파일로 하기</summary>
       <div class="pick">
         <input type="file" id="file" accept="video/*">
-        <span class="legend" id="fileHint">orbcut 출력의 label_mobile.mp4 또는 panorama.mp4</span>
+        <span class="legend" id="fileHint">multicam360 출력의 label_mobile.mp4 또는 panorama.mp4</span>
       </div>
     </details>
   </section>
@@ -373,7 +373,7 @@ function stats(){
 }
 
 // 저장: 표시가 바뀔 때마다 한 번에 한 건씩
-const LS = "orbcut-labels-" + CLIP;
+const LS = "multicam360-labels-" + CLIP;
 function changed(){
   stats(); dirty = true; if (!dragging) render();
   try { localStorage.setItem(LS, labelsJson()); } catch (e) { /* 사본은 편의용 — 실패해도 진행 */ }
@@ -395,7 +395,7 @@ function labelsJson(){
   return JSON.stringify({clip: CLIP, people: PEOPLE.map(p => p.id), people_desc: Object.fromEntries(PEOPLE.map(p => [p.id, p.desc])),
                          duration: +(vid.duration || 180).toFixed(2), segments: segs}, null, 1);
 }
-// 저장소 없이 일반 브라우저로 열었을 때(공개본): 파일로 내려받아 `python -m orbcut eval edit.json labels.json`
+// 저장소 없이 일반 브라우저로 열었을 때(공개본): 파일로 내려받아 `python -m multicam360 eval edit.json labels.json`
 $("#export").onclick = () => {
   const a = document.createElement("a");
   a.href = URL.createObjectURL(new Blob([labelsJson()], {type: "application/json"}));

@@ -6,8 +6,8 @@ import pytest
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, REPO)
-from orbcut.engine import Projector, dir_to_yaw_pitch, equirect_dirs, flat_dirs, load_lenses
-from orbcut.reframe import rect_vfov
+from multicam360.engine import Projector, dir_to_yaw_pitch, equirect_dirs, flat_dirs, load_lenses
+from multicam360.reframe import rect_vfov
 
 L0, L1, META = (os.path.join(REPO, "re", f) for f in ("l0.png", "l1.png", "tail8m.bin"))
 need_fixture = pytest.mark.skipif(not all(map(os.path.exists, (L0, L1, META))), reason="렌즈 스틸 픽스처 없음")
@@ -77,7 +77,7 @@ def test_seam_flow_reduces_ghost():
 
 def test_seam_strip_cols_wrap():
     """보이는 θ가 ±180°를 걸쳐도 덮는 열이 연속(원형) 한 덩어리로 나온다."""
-    from orbcut.engine import SEAM_MARGIN, SEAM_PPD, SeamStrip
+    from multicam360.engine import SEAM_MARGIN, SEAM_PPD, SeamStrip
     st = SeamStrip.__new__(SeamStrip)
     st.W = 360 * SEAM_PPD
     cols = st.cols_for(np.array([178.0, 179.5, -179.5, -178.0]))
@@ -88,7 +88,7 @@ def test_seam_strip_cols_wrap():
 @need_fixture
 def test_dynamic_seam_flow_aligns():
     """동적 렌더(band2): 이음새 띠 플로우로 두 렌즈 정렬 오차가 줄고, 같은 뷰의 정적 렌더(band2)와 화면이 맞는다."""
-    from orbcut.engine import DynamicProjector
+    from multicam360.engine import DynamicProjector
     lenses = load_lenses(META)
     pair = np.hstack([cv2.imread(L0), cv2.imread(L1)])
     view = flat_dirs(90, 0, 70, 640, 360)                 # 이음새(yaw ±90°)를 가운데에

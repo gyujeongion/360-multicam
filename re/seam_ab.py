@@ -13,8 +13,8 @@ import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from orbcut import engine
-from orbcut.engine import DEC_COLOR, Projector, equirect_dirs, load_lenses
+from multicam360 import engine
+from multicam360.engine import DEC_COLOR, Projector, equirect_dirs, load_lenses
 from studio_compare import H, W, estimate_rotation, grab, remap_rot, seam_mask, sharpness
 
 VARIANTS = {

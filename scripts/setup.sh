@@ -1,5 +1,5 @@
 #!/bin/bash
-# orbcut 설치: 파이썬 환경 + Light-ASD(업스트림 고정 커밋 + 패치) — macOS(Apple Silicon) 기준
+# multicam360 설치: 파이썬 환경 + Light-ASD(업스트림 고정 커밋 + 패치) — macOS(Apple Silicon) 기준
 set -eo pipefail
 cd "$(dirname "$0")/.."
 command -v ffmpeg >/dev/null || { echo "ffmpeg 필요 (brew install ffmpeg)"; exit 1; }
@@ -11,4 +11,4 @@ if [ ! -d Light-ASD ]; then
   git -C Light-ASD checkout -q "$(cat vendor/light_asd.commit)"
   git -C Light-ASD apply ../vendor/light_asd.patch
 fi
-.venv/bin/python -m orbcut doctor
+.venv/bin/python -m multicam360 doctor

@@ -10,9 +10,9 @@ import pytest
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, REPO)
-from orbcut.engine import Projector, equirect_dirs, load_lenses
-from orbcut.imu import read_imu
-from orbcut.stabilize import IMU_TO_CAM, orientations, tilt_deg
+from multicam360.engine import Projector, equirect_dirs, load_lenses
+from multicam360.imu import read_imu
+from multicam360.stabilize import IMU_TO_CAM, orientations, tilt_deg
 
 TR = os.path.join(REPO, "re", "out016.trailer")
 FR = sorted(glob.glob(os.path.join(REPO, "re", "out016", "f_*.png")))
@@ -90,7 +90,7 @@ EL_FR = sorted(glob.glob(os.path.join(REPO, "re", "move006_frames", "f_*.png")))
 def test_horizon_level_vertical_lines():
     """수평: 엘리베이터(문 모서리 = 진짜 수직선)를 크게 흔든 0.5~3.5초. 안정화 화면의 수직선 기울기 중앙값 ≤ 1°.
     차 안은 A필러 등이 원래 비스듬해 기준이 될 수 없음 — 가속도 기반 측정은 손 가속이 섞여 폐기 (LEDGER)."""
-    from orbcut.engine import DynamicProjector, flat_dirs
+    from multicam360.engine import DynamicProjector, flat_dirs
     lenses = load_lenses(EL_TR)
     imu = read_imu(open(EL_TR, "rb").read())
     frames = [cv2.imread(f) for f in EL_FR]

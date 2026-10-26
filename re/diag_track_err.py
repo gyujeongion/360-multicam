@@ -2,8 +2,8 @@
 import json, math, sys
 import cv2, numpy as np
 sys.path.insert(0, ".")
-from orbcut.faces import FaceKit, SAME_PERSON
-from orbcut.track import smooth_path
+from multicam360.faces import FaceKit, SAME_PERSON
+from multicam360.track import smooth_path
 out, pid = sys.argv[1], sys.argv[2]
 r = json.load(open(f"{out}/render.json")) if False else None
 paths = json.load(open(f"{out}/paths.json"))["paths"][pid]

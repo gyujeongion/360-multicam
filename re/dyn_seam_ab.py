@@ -14,9 +14,9 @@ import cv2
 import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from orbcut.engine import DEC_COLOR, DynamicProjector, flat_dirs, load_lenses  # noqa: E402
-from orbcut.swap import view_fn  # noqa: E402
-from orbcut.track import rot_lookup  # noqa: E402
+from multicam360.engine import DEC_COLOR, DynamicProjector, flat_dirs, load_lenses  # noqa: E402
+from multicam360.swap import view_fn  # noqa: E402
+from multicam360.track import rot_lookup  # noqa: E402
 
 
 def grad(img):

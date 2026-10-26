@@ -24,7 +24,7 @@ def _check(video, kit, present=None, fps=2.0, ref_n=3):
     """얼굴이 보이는 프레임에서: 가운데 1/3 비율, 처음 잡힌 사람과 같은 신원(SFace) 비율. 뒤통수 프레임은 제외."""
     import cv2
     import numpy as np
-    from orbcut.faces import SAME_PERSON
+    from multicam360.faces import SAME_PERSON
     cap = cv2.VideoCapture(video)
     vfps = cap.get(cv2.CAP_PROP_FPS) or 30
     step = max(1, int(round(vfps / fps)))
@@ -72,10 +72,10 @@ def test_tracked_faces_stay_centered():
         return
     m_path = os.path.join(OUT, "manifest.json")
     if not (os.path.exists(m_path) and json.load(open(m_path)).get("status") == "ok"):
-        r = subprocess.run([sys.executable, "-m", "orbcut", "--json", "all", SRC, "--out", OUT, "--meta", SRC + ".trailer",
+        r = subprocess.run([sys.executable, "-m", "multicam360", "--json", "all", SRC, "--out", OUT, "--meta", SRC + ".trailer",
                             "--mode", "track", "--src-start", "40"], cwd=REPO, capture_output=True, text=True)
         assert json.load(open(m_path))["status"] == "ok", r.stdout[-500:] + r.stderr[-800:]
-    from orbcut.faces import FaceKit
+    from multicam360.faces import FaceKit
     kit = FaceKit()
     people = json.load(open(os.path.join(OUT, "people.json")))["people"]
     paths = json.load(open(os.path.join(OUT, "paths.json")))["paths"]
@@ -104,7 +104,7 @@ def _shake(pano, path_rows, fixed, seg_end, fps=10.0):
     seg_end: 첫 카메라 이동 전까지만(실내 기준이 바뀌기 전)."""
     import cv2
     import numpy as np
-    from orbcut.engine import flat_dirs
+    from multicam360.engine import flat_dirs
     t_ = np.array([r[0] for r in path_rows]); y_ = np.degrees(np.unwrap(np.radians([r[1] for r in path_rows])))
     p_ = np.array([r[2] for r in path_rows])
     cap = cv2.VideoCapture(pano); vfps = cap.get(cv2.CAP_PROP_FPS); step = max(1, int(round(vfps / fps)))
@@ -161,7 +161,7 @@ def test_handoff_boundary_from_imu():
     pano = os.path.join(OUT, "panorama.mp4")
     if not os.path.exists(pano + ".dets_4.pkl"):
         pytest.skip("검출 캐시 없음(원격에서 test_tracked_faces_stay_centered가 함께 실행)")
-    from orbcut.track import TRACK_FPS, track_seats
+    from multicam360.track import TRACK_FPS, track_seats
     people = json.load(open(os.path.join(OUT, "people.json")))["people"]
     new = [s["start"] for s in track_seats(pano, people, TRACK_FPS, return_segments=True)[2][1:]]
     old = [s["start"] for s in track_seats(pano, people, TRACK_FPS, bursts=[], return_segments=True)[2][1:]]

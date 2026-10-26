@@ -2,10 +2,10 @@
 import glob, sys
 import cv2, numpy as np
 sys.path.insert(0, '.')
-from orbcut.engine import DynamicProjector, equirect_dirs, load_lenses
-from orbcut.imu import read_imu
-from orbcut.stabilize import orientations
-from orbcut.anchor import SceneAnchor
+from multicam360.engine import DynamicProjector, equirect_dirs, load_lenses
+from multicam360.imu import read_imu
+from multicam360.stabilize import orientations
+from multicam360.anchor import SceneAnchor
 
 raw_tr = open('re/car013.trailer', 'rb').read()
 L = load_lenses('re/car013.trailer'); imu = read_imu(raw_tr)

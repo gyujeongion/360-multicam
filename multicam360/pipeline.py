@@ -1,6 +1,6 @@
 """단계 오케스트레이션 + manifest.json (AI·사람 모두 이 파일 하나로 상태 판독).
 
-각 단계는 별도 프로세스(`python -m orbcut.<모듈>`)로 실행 — 작업 디렉토리·메모리 격리.
+각 단계는 별도 프로세스(`python -m multicam360.<모듈>`)로 실행 — 작업 디렉토리·메모리 격리.
 """
 import hashlib, json, os, subprocess, sys, time
 
@@ -40,7 +40,7 @@ def run(stage, args, cwd=None, log=None):
 
 
 def mod(name, *a):
-    return [PY, "-m", f"orbcut.{name}", *map(str, a)]
+    return [PY, "-m", f"multicam360.{name}", *map(str, a)]
 
 
 def parse_range(r):
@@ -72,9 +72,9 @@ def media_duration(path):
 
 
 def load_params(out, overrides=None):
-    """기본값 ← <out>/orbcut.json ← 호출 인자. 단계별 해시에 들어가 바뀐 단계만 다시 돈다."""
+    """기본값 ← <out>/multicam360.json ← 호출 인자. 단계별 해시에 들어가 바뀐 단계만 다시 돈다."""
     params = json.loads(json.dumps(DEFAULTS))
-    cfg = os.path.join(out, "orbcut.json")
+    cfg = os.path.join(out, "multicam360.json")
     for src in ([json.load(open(cfg))] if os.path.exists(cfg) else []) + [overrides or {}]:
         for stage, kv in src.items():
             params.setdefault(stage, {}).update(kv)
@@ -106,11 +106,11 @@ def _lock_out(out):
     """한 결과 폴더엔 한 실행만. 두 실행이 같은 앵글·화자감지 파일을 동시에 쓰면 디스크 대기로 멈춘다
     (실측 2026-10-22: 검증 위임 + 수동 재실행이 겹쳐 화자감지 4개가 2시간 반 정지)."""
     import fcntl
-    f = open(os.path.join(out, ".orbcut.lock"), "w")
+    f = open(os.path.join(out, ".multicam360.lock"), "w")
     try:
         fcntl.flock(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
     except BlockingIOError:
-        raise RuntimeError(f"다른 orbcut 실행이 이 폴더를 쓰는 중: {out} — 끝난 뒤 다시 실행")
+        raise RuntimeError(f"다른 multicam360 실행이 이 폴더를 쓰는 중: {out} — 끝난 뒤 다시 실행")
     _LOCKS.append(f)                       # 프로세스가 끝날 때까지 잠금 유지
 
 
@@ -143,9 +143,9 @@ def run_all(src, out, meta=None, rng=None, eq_width=3840, jobs=None, overrides=N
     m = Manifest(out)
     params = load_params(out, overrides)
     params["panorama"]["width"] = eq_width
-    # 렌더 프로세스마다 원본 8K를 따로 디코딩한다 → 동시 프로세스 = 동시 디코더. 상한 ORBCUT_MAX_DEC(기본 2)
+    # 렌더 프로세스마다 원본 8K를 따로 디코딩한다 → 동시 프로세스 = 동시 디코더. 상한 MULTICAM360_MAX_DEC(기본 2)
     # (실측: 4개 동시 → 원격 부하 42/20, 맥북에선 ffmpeg 8개 약 50GB로 메모리 고갈)
-    max_dec = int(os.environ.get("ORBCUT_MAX_DEC", 2))
+    max_dec = int(os.environ.get("MULTICAM360_MAX_DEC", 2))
     jobs = min(jobs or max(1, min(5, (os.cpu_count() or 4) // 4)), max_dec)
     meta_path = meta or src
     _guard_local_length(src, rng)
@@ -322,7 +322,7 @@ def doctor_local():
     probs = [f"{t} 없음" for t in ("ffmpeg", "ffprobe") if not shutil.which(t)]
     for f in ("weight/pretrain_AVA_CVPR.model", "model/faceDetector/s3fd/sfd_face.pth"):
         if not os.path.exists(os.path.join(asd_dir(), f)):
-            probs.append(f"Light-ASD 파일 없음: {f} (ORBCUT_ASD_DIR={asd_dir()})")
+            probs.append(f"Light-ASD 파일 없음: {f} (MULTICAM360_ASD_DIR={asd_dir()})")
     try:
         import torch, cv2  # noqa
     except ImportError as e:

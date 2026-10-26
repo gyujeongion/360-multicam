@@ -1,4 +1,4 @@
-"""원격 호스트(작업용 맥 등)에서 orbcut 실행: 코드 동기화 → 환경 준비 → 실행 → 결과 회수.
+"""원격 호스트(작업용 맥 등)에서 multicam360 실행: 코드 동기화 → 환경 준비 → 실행 → 결과 회수.
 
 원격 경로: ~/Development/261020_360multicam (같은 상대 구조). 대용량 산출물은 원격에 두고
 결과(manifest·xml·shots·preview·logs)와 4K 마스터를 회수하고 XML 경로를 로컬로 바꾼다. --no-fetch-masters면 마스터 제외.
@@ -58,7 +58,7 @@ def doctor(host):
     for tool in ("ffmpeg", "ffprobe", "uv"):
         if not any(l.endswith("/" + tool) for l in lines):
             probs.append(f"{tool} 없음")
-    if "py_ok" not in out: probs.append("venv/패키지 미준비 → orbcut remote setup")
+    if "py_ok" not in out: probs.append("venv/패키지 미준비 → multicam360 remote setup")
     if "asd_ok" not in out: probs.append("Light-ASD 가중치 없음 → sync")
     if "s3fd_ok" not in out: probs.append("S3FD 가중치 없음 → sync")
     if load1 > ncpu * 0.7: probs.append(f"부하 높음 {load1}/{ncpu} — 다른 무거운 작업 대기 권장")
@@ -91,8 +91,8 @@ def relocate(out, remote_base, local_base):
 
 
 def run(host, mc_args, out_rel, fetch_to=None, fetch_masters=True):
-    """원격에서 `python -m orbcut --json <mc_args>` 실행 후 결과 회수."""
-    rc = sh(host, f"cd {REMOTE_DIR} && .venv/bin/python -m orbcut --json {' '.join(shlex.quote(a) for a in mc_args)}",
+    """원격에서 `python -m multicam360 --json <mc_args>` 실행 후 결과 회수."""
+    rc = sh(host, f"cd {REMOTE_DIR} && .venv/bin/python -m multicam360 --json {' '.join(shlex.quote(a) for a in mc_args)}",
             check=False)
     if fetch_to:
         os.makedirs(fetch_to, exist_ok=True)

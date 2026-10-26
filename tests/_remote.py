@@ -3,9 +3,9 @@ import os, subprocess, sys
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, REPO)
-from orbcut.config import remote_dir, remote_host  # noqa: E402
+from multicam360.config import remote_dir, remote_host  # noqa: E402
 
-ON_REMOTE = os.environ.get("ORBCUT_ON_REMOTE") == "1"
+ON_REMOTE = os.environ.get("MULTICAM360_ON_REMOTE") == "1"
 
 
 def delegate(cmd):
@@ -13,5 +13,5 @@ def delegate(cmd):
     host = remote_host()
     if not host or ON_REMOTE:
         return None
-    subprocess.run([sys.executable, "-c", f"from orbcut import remote; remote.sync({host!r})"], cwd=REPO, check=True)
-    return subprocess.run(["ssh", host, f"cd {remote_dir()} && ORBCUT_ON_REMOTE=1 {cmd}"]).returncode
+    subprocess.run([sys.executable, "-c", f"from multicam360 import remote; remote.sync({host!r})"], cwd=REPO, check=True)
+    return subprocess.run(["ssh", host, f"cd {remote_dir()} && MULTICAM360_ON_REMOTE=1 {cmd}"]).returncode

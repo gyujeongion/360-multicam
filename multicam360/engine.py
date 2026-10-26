@@ -12,14 +12,14 @@ import numpy as np
 from .calib import euler, offset_v6_from_metadata, omni_project, parse_offset_v6, read_metadata_bytes
 
 CROP, STREAM_SCALE = 32, 0.5      # 보정 좌표(7744) → 센서 크롭 7680 → 스트림 3840
-FEATHER = float(os.environ.get("ORBCUT_FEATHER", "0.12"))   # 광축 cos 기준 페더 폭
+FEATHER = float(os.environ.get("MULTICAM360_FEATHER", "0.12"))   # 광축 cos 기준 페더 폭
 # 어안 → 출력 보간. 선형은 저역통과처럼 뭉개져 Studio 대비 선명도 72%(본체)·53%(이음새)로 측정됨(M15) → 큐빅 기본
 INTERP = {"linear": cv2.INTER_LINEAR, "cubic": cv2.INTER_CUBIC, "lanczos": cv2.INTER_LANCZOS4}[
-    os.environ.get("ORBCUT_INTERP", "cubic")]
+    os.environ.get("MULTICAM360_INTERP", "cubic")]
 # 인코딩 전 마감 필터(ffmpeg -vf). 노이즈가 많으면 인코더가 비트를 노이즈에 써서 디테일을 잃는다(M15 실측:
 # 프레임 선명도 Studio 대비 1.24 → 인코딩 후 0.87). 빈 값이면 끔
 # M15 실측(Studio 대비): 약한 시간축 디노이즈 + 약한 언샤프가 인코딩 손실을 가장 잘 보완
-FINISH_VF = os.environ.get("ORBCUT_FINISH_VF", "hqdn3d=6:4.5:9:6.75,unsharp=5:5:0.6:5:5:0")
+FINISH_VF = os.environ.get("MULTICAM360_FINISH_VF", "hqdn3d=6:4.5:9:6.75,unsharp=5:5:0.6:5:5:0")
 
 
 # 색 변환은 BT.709로 고정: 기본값(BT.601)으로 풀고 다시 묶으면 밝기·색이 틀어지고 태그도 비어
@@ -28,8 +28,8 @@ DEC_COLOR = "scale=in_color_matrix=bt709:in_range=tv"
 ENC_TAGS = ["-colorspace", "bt709", "-color_primaries", "bt709", "-color_trc", "bt709", "-color_range", "tv"]
 
 
-TEN_BIT = os.environ.get("ORBCUT_10BIT", "1") == "1"      # Studio 출력과 같은 10비트(main10)
-ENC_Q = os.environ.get("ORBCUT_ENC_Q", "70")                 # 품질 고정(VideoToolbox -q:v 1~100). 빈 값이면 비트레이트 지정
+TEN_BIT = os.environ.get("MULTICAM360_10BIT", "1") == "1"      # Studio 출력과 같은 10비트(main10)
+ENC_Q = os.environ.get("MULTICAM360_ENC_Q", "70")                 # 품질 고정(VideoToolbox -q:v 1~100). 빈 값이면 비트레이트 지정
 
 
 def _enc_vf():
@@ -41,19 +41,19 @@ def _enc_vf():
 def _enc_rate(br):
     return ["-q:v", ENC_Q] if ENC_Q else ["-b:v", br]
 FLOW_SCALE = 0.5
-FLOW_EMA = float(os.environ.get("ORBCUT_FLOW_EMA", "0.8"))   # M15-3: 0.6→0.8, 프레임 간 플로우 변화 6.1→0.8px
-FLOW_MAX_ELEV = float(os.environ.get("ORBCUT_FLOW_MAX_ELEV", "55"))   # 이 고도 밖(천장·바닥 극)은 플로우 생략, 페더만
-FLOW_TILE = int(os.environ.get("ORBCUT_FLOW_TILE", "0"))              # 플로우 영역 세로 분할(0 = 세로 전체 한 스트립, M15-2 실측 최선)
+FLOW_EMA = float(os.environ.get("MULTICAM360_FLOW_EMA", "0.8"))   # M15-3: 0.6→0.8, 프레임 간 플로우 변화 6.1→0.8px
+FLOW_MAX_ELEV = float(os.environ.get("MULTICAM360_FLOW_MAX_ELEV", "55"))   # 이 고도 밖(천장·바닥 극)은 플로우 생략, 페더만
+FLOW_TILE = int(os.environ.get("MULTICAM360_FLOW_TILE", "0"))              # 플로우 영역 세로 분할(0 = 세로 전체 한 스트립, M15-2 실측 최선)
 # 이음새 합성 방식: feather = 선형 알파 / band2 = 저주파 넓게·고주파 좁게 + 플로우 신뢰도 낮은 곳은 한쪽 렌즈만
-SEAM_MODE = os.environ.get("ORBCUT_SEAM_MODE", "band2")
-BAND2_K = float(os.environ.get("ORBCUT_BAND2_K", "10"))       # 고주파 알파 기울기(클수록 좁은 전환)
-BAND2_SIGMA = float(os.environ.get("ORBCUT_BAND2_SIGMA", "6"))  # 저/고주파 분리 가우시안 σ(px)
-CONF_FB = float(os.environ.get("ORBCUT_CONF_FB", "1.5"))      # 전후방 플로우 불일치 허용(px, 출력 해상도)
-CONF_RES = float(os.environ.get("ORBCUT_CONF_RES", "24"))     # 정렬 후 밝기 잔차 허용(0~255)
-FLOW_SMOOTH = float(os.environ.get("ORBCUT_FLOW_SMOOTH", "32"))   # 플로우 공간 평활 σ(px, 출력 해상도). 0=끔. 패치 단위 물결(워프 출렁임) 억제
-FLOW_VCLAMP = float(os.environ.get("ORBCUT_FLOW_VCLAMP", "3"))   # 수직 플로우 성분 상한(px). 시차는 거의 수평이라 수직은 보정 잔차 수준만. 0=끔
-FLOW_MAX = float(os.environ.get("ORBCUT_FLOW_MAX", "0"))         # 플로우 크기 상한(px). 0=끔
-EMA_ADAPT = float(os.environ.get("ORBCUT_EMA_ADAPT", "0"))    # >0이면 플로우 변화량(px)에 따라 EMA 감쇠(σ). 기본 0 — DIS 잡음(~6px)이 σ를 넘어 평활이 꺼지던 실측
+SEAM_MODE = os.environ.get("MULTICAM360_SEAM_MODE", "band2")
+BAND2_K = float(os.environ.get("MULTICAM360_BAND2_K", "10"))       # 고주파 알파 기울기(클수록 좁은 전환)
+BAND2_SIGMA = float(os.environ.get("MULTICAM360_BAND2_SIGMA", "6"))  # 저/고주파 분리 가우시안 σ(px)
+CONF_FB = float(os.environ.get("MULTICAM360_CONF_FB", "1.5"))      # 전후방 플로우 불일치 허용(px, 출력 해상도)
+CONF_RES = float(os.environ.get("MULTICAM360_CONF_RES", "24"))     # 정렬 후 밝기 잔차 허용(0~255)
+FLOW_SMOOTH = float(os.environ.get("MULTICAM360_FLOW_SMOOTH", "32"))   # 플로우 공간 평활 σ(px, 출력 해상도). 0=끔. 패치 단위 물결(워프 출렁임) 억제
+FLOW_VCLAMP = float(os.environ.get("MULTICAM360_FLOW_VCLAMP", "3"))   # 수직 플로우 성분 상한(px). 시차는 거의 수평이라 수직은 보정 잔차 수준만. 0=끔
+FLOW_MAX = float(os.environ.get("MULTICAM360_FLOW_MAX", "0"))         # 플로우 크기 상한(px). 0=끔
+EMA_ADAPT = float(os.environ.get("MULTICAM360_EMA_ADAPT", "0"))    # >0이면 플로우 변화량(px)에 따라 EMA 감쇠(σ). 기본 0 — DIS 잡음(~6px)이 σ를 넘어 평활이 꺼지던 실측
 
 
 # ---------- 방향 격자 ----------
@@ -136,7 +136,7 @@ def lens_rotations(lenses):
     z = lenses[1]["rot"][2]
     R = [euler(l["rot"][0], l["rot"][1], z, "zxy").T for l in lenses]
     M1 = R[1] @ R[0].T @ np.diag([-1.0, 1, -1])
-    corr = os.environ.get("ORBCUT_LENS1_CORR")            # 실험용: "롤,x,y"(도) — 렌즈1 샘플링 방향에 추가 회전
+    corr = os.environ.get("MULTICAM360_LENS1_CORR")            # 실험용: "롤,x,y"(도) — 렌즈1 샘플링 방향에 추가 회전
     if corr:
         r, x, y = (float(v) for v in corr.split(","))
         M1 = M1 @ euler(x, y, r, "xyz")
@@ -320,7 +320,7 @@ def render_many(src, outputs, start=None, dur=None, fps="30000/1001", stream_w=3
 
 
 # 동적 렌더 이음새: band2 = 카메라에 붙은 이음새 띠에서 플로우 정렬 + 2밴드 합성 / feather = 가중치 페더만
-DYN_SEAM = os.environ.get("ORBCUT_DYN_SEAM", "band2")
+DYN_SEAM = os.environ.get("MULTICAM360_DYN_SEAM", "band2")
 SEAM_PPD = 12          # 이음새 띠 플로우 해상도(px/도) — 정적 렌더 플로우 해상도(70°·1920폭 출력의 절반)와 같다
 SEAM_HALF = 12         # 띠 반폭(도). 겹침 띠(약 ±7°)를 덮는다
 SEAM_MARGIN = 24       # 보이는 열 앞뒤 여유(px, 2°) — DIS 가장자리 오차가 쓰는 곳까지 오지 않게

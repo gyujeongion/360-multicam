@@ -2,8 +2,8 @@
 import json, sys
 import cv2, numpy as np
 sys.path.insert(0, ".")
-from orbcut.engine import flat_dirs
-from orbcut.track import smooth_path
+from multicam360.engine import flat_dirs
+from multicam360.track import smooth_path
 out, pid, dst = sys.argv[1], sys.argv[2], sys.argv[3]
 times = [float(x) for x in sys.argv[4].split(",")]
 sm = smooth_path(json.load(open(f"{out}/paths.json"))["paths"][pid])

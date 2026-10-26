@@ -9,7 +9,7 @@
      카메라를 든 사람(가장 가깝고 옆·아래 얼굴)과 뒷줄 작은 얼굴을 가르는 데 결정적이었다(차 안 실측).
 배정은 화자→인물 단사 함수 전수 탐색(화자·인물 수가 작다)으로 총점 최대.
 
-usage: python -m orbcut diarize <orbcut out_dir> <diar.json> [--audio SRC] [--out cut_diar.json] [--map 1=D] [--offset 1.616]
+usage: python -m multicam360 diarize <multicam360 out_dir> <diar.json> [--audio SRC] [--out cut_diar.json] [--map 1=D] [--offset 1.616]
 --offset: diar.json 시각이 원본 구간 시작 기준인데 렌더 결과 앞에 키프레임 리드가 붙어 있을 때 그 초만큼 민다.
 diar.json: {"tokens": [{"speaker": "1", "text": "..", "start_ms": .., "end_ms": ..}, ...]} (소니옥스 형식)
 """

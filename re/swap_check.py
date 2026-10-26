@@ -7,7 +7,7 @@ import cv2
 import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from orbcut.faces import model_path  # noqa: E402
+from multicam360.faces import model_path  # noqa: E402
 
 W, H = 1920, 1080
 

@@ -5,8 +5,8 @@ import glob, itertools, json, os, sys
 import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from orbcut.cut import ASD_FPS, decide, person_scores, smooth
-from orbcut.eval import HZ, label_sets
+from multicam360.cut import ASD_FPS, decide, person_scores, smooth
+from multicam360.eval import HZ, label_sets
 
 cams_dir, labels_p = sys.argv[1], sys.argv[2]
 L = json.load(open(labels_p))

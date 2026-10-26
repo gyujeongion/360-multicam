@@ -7,9 +7,9 @@ import cv2
 import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from orbcut import engine  # noqa: E402
-from orbcut.engine import DEC_COLOR, Projector, equirect_dirs, load_lenses  # noqa: E402
-from orbcut.faces import model_path  # noqa: E402
+from multicam360 import engine  # noqa: E402
+from multicam360.engine import DEC_COLOR, Projector, equirect_dirs, load_lenses  # noqa: E402
+from multicam360.faces import model_path  # noqa: E402
 
 W, CW, CH = 5760, 720, 480          # equirect 폭, 자를 크기
 

@@ -7,7 +7,7 @@ import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from orbcut.engine import Projector, equirect_dirs, load_lenses
+from multicam360.engine import Projector, equirect_dirs, load_lenses
 from studio_compare import H, W, estimate_rotation, grab, noise, remap_rot, seam_mask, sharpness, ssim_map
 
 TIMES = [3, 10, 17, 24, 31, 38, 45]

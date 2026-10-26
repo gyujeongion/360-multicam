@@ -17,11 +17,11 @@ if (remote_host() and not ON_REMOTE) or not os.path.exists(SRC):
         print("픽스처 없음·원격 미설정 — 건너뜀"); sys.exit(0)
     sys.exit(rc)
 
-r = subprocess.run([sys.executable, "-m", "orbcut", "--json", "all", SRC, "--out", OUT, "--meta",
+r = subprocess.run([sys.executable, "-m", "multicam360", "--json", "all", SRC, "--out", OUT, "--meta",
                     os.path.join(REPO, "re", "tail8m.bin"), "--until", "cut"], cwd=REPO, capture_output=True, text=True)
 m = json.load(open(os.path.join(OUT, "manifest.json")))
 assert m["stages"]["cut"]["status"] == "ok", r.stdout[-400:] + r.stderr[-400:]
-from orbcut.eval import evaluate
+from multicam360.eval import evaluate
 res = evaluate(json.load(open(os.path.join(OUT, "edit.json"))), json.load(open(LABELS)), 0.5)
 print(f"frame_acc {res['frame_acc']:.3f} · 잘못 비춤 {res['wrong_s']:.1f}s · 컷 {res['n_cuts']}개 · 인물별 "
       + ", ".join(f"{k} {v['shown_while_talking']:.0%}" for k, v in res["per_person"].items()))

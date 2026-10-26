@@ -6,9 +6,9 @@
 (people_view.json = 모든 인물 yaw 0, pitch 0).
 
 usage:
-  python -m orbcut.track imu <src> <out.npz> --meta M            프레임별 자세 + 시간차
-  python -m orbcut.track paths <panorama.mp4> <people.json> <out.json> [--fps 4]
-  python -m orbcut.track render <src> <imu.npz> <paths.json> <out_dir> --meta M --hfov 70 --w 1920 --h 1080
+  python -m multicam360.track imu <src> <out.npz> --meta M            프레임별 자세 + 시간차
+  python -m multicam360.track paths <panorama.mp4> <people.json> <out.json> [--fps 4]
+  python -m multicam360.track render <src> <imu.npz> <paths.json> <out_dir> --meta M --hfov 70 --w 1920 --h 1080
         [--proj flat|pannini] [--bitrate 12M] [--only A,B]
 """
 import argparse, json, math, os, subprocess, sys
@@ -24,8 +24,8 @@ from .stabilize import estimate_time_offset, orientations
 TRACK_FPS = 4
 SMOOTH_S = 0.8          # 경로 평활(가우시안 시그마, 초)
 GATE_DEG = 20           # 직전 방향에서 이 각도 안의 얼굴만 같은 사람 후보
-MAX_HW_ENC = int(os.environ.get("ORBCUT_MAX_ENC", 4))   # 동시 하드웨어 인코딩 수 상한
-MAX_HW_DEC = int(os.environ.get("ORBCUT_MAX_DEC", 2))   # 동시 하드웨어 디코딩(프로세스) 수 상한
+MAX_HW_ENC = int(os.environ.get("MULTICAM360_MAX_ENC", 4))   # 동시 하드웨어 인코딩 수 상한
+MAX_HW_DEC = int(os.environ.get("MULTICAM360_MAX_DEC", 2))   # 동시 하드웨어 디코딩(프로세스) 수 상한
 WIDE_ID = "wide"
 WIDE_HFOV = 110         # 실내 고정 광각 화각
 LINK_SIM = 0.5          # 구간 간 신원 연결 임계(실측 같은 사람 0.93~0.95, 다른 사람 0.26~0.28)
@@ -340,7 +340,7 @@ def track_seats(panorama, people, fps=TRACK_FPS, sigma_drift=1.0, sigma_res=0.7,
                     if S[a, b] >= LINK_SIM:
                         nseat[olds[b]] = np.array([new[a]["y"], new[a]["p"]])
                 used = {a for a, b in zip(r, c) if S[a, b] >= LINK_SIM}
-                if os.environ.get("ORBCUT_DEBUG"):
+                if os.environ.get("MULTICAM360_DEBUG"):
                     print(f"[link] t={ts[k0]:.2f} olds={olds} gal={[len(gallery[o]) for o in olds]} "
                           f"new={[(round(st['y']), len(st['e'])) for st in new]}\n{np.round(S, 2)}", file=sys.stderr)
             else:
@@ -521,7 +521,7 @@ def main(argv=None):
     os.makedirs(a.out_dir, exist_ok=True)
     if a.jobs > 1 and not a.only:              # 인물 단위로 나눠 하위 프로세스 병렬
         ids = list(paths)
-        base, skip = [sys.executable, "-m", "orbcut.track"], False
+        base, skip = [sys.executable, "-m", "multicam360.track"], False
         for x in (argv or sys.argv[1:]):
             if skip: skip = False; continue
             if x == "--jobs": skip = True; continue

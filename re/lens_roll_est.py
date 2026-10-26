@@ -8,8 +8,8 @@ import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from orbcut import engine  # noqa: E402
-from orbcut.engine import SEAM_PPD, SeamStrip, load_lenses  # noqa: E402
+from multicam360 import engine  # noqa: E402
+from multicam360.engine import SEAM_PPD, SeamStrip, load_lenses  # noqa: E402
 from readme_seam_shots import pair_at  # noqa: E402
 
 
@@ -21,7 +21,7 @@ def main():
     a = ap.parse_args()
     engine.FLOW_SMOOTH = engine.FLOW_VCLAMP = 0           # 원시 플로우(평활·세로 제한 없이)
     if a.corr:
-        os.environ["ORBCUT_LENS1_CORR"] = a.corr
+        os.environ["MULTICAM360_LENS1_CORR"] = a.corr
     res = {"per_frame": [], "per_src": {}}
     for src in a.srcs:
         meta = src + ".trailer" if os.path.exists(src + ".trailer") else src

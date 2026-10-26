@@ -8,7 +8,7 @@ fi
 SRC=work/src_240_180.mkv; META=re/tail8m.bin; OUT=work/smoke
 [ -f "$SRC" ] && [ -f "$META" ] || { echo "픽스처 없음: $SRC / $META"; exit 1; }
 rm -rf "$OUT"
-.venv/bin/python -m orbcut --json all "$SRC" --out "$OUT" --range 30:36 --meta "$META" | tail -1
+.venv/bin/python -m multicam360 --json all "$SRC" --out "$OUT" --range 30:36 --meta "$META" | tail -1
 .venv/bin/python - "$OUT" <<'PY'
 import json, os, sys, subprocess
 out = sys.argv[1]

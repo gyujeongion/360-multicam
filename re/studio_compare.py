@@ -1,4 +1,4 @@
-"""M15: Insta360 Studio 360 내보내기 vs orbcut 파노라마 화질 비교.
+"""M15: Insta360 Studio 360 내보내기 vs multicam360 파노라마 화질 비교.
 
 두 equirect 영상을 같은 시각 프레임끼리 3840x1920으로 맞추고,
 ① 특징점 → 단위벡터 → RANSAC 회전 추정으로 방향을 맞춘 뒤(Studio는 수평·방향 보정을 할 수 있음)
@@ -68,7 +68,7 @@ def estimate_rotation(ref, mov, iters=400, thr_deg=0.4):
 
 
 def seam_mask():
-    """orbcut 파노라마(카메라 좌표, 렌즈0 = +z) 기준 이음새 띠: 렌즈 축(z)과 거의 직각인 방향."""
+    """multicam360 파노라마(카메라 좌표, 렌즈0 = +z) 기준 이음새 띠: 렌즈 축(z)과 거의 직각인 방향."""
     yy, xx = np.mgrid[0:H, 0:W]
     d = px_to_dir(xx, yy)
     ang = np.degrees(np.arccos(np.clip(np.abs(d[..., 2]), 0, 1)))       # 축과의 각, 90°가 경계
@@ -126,7 +126,7 @@ def main():
              "ssim_seam": float(ss[seam].mean()), "ssim_body": float(ss[body].mean()),
              "lab_mean_studio": ls[body].mean(0).round(1).tolist(), "lab_mean_ours": lo[body].mean(0).round(1).tolist()}
         rows.append(r)
-        # 이음새에서 두 영상이 가장 다른 곳 확대(위 Studio / 아래 orbcut)
+        # 이음새에서 두 영상이 가장 다른 곳 확대(위 Studio / 아래 multicam360)
         sm = cv2.blur(np.where(seam, 1 - ss, 0).astype(np.float32), (101, 101))
         y, x = np.unravel_index(np.argmax(sm), sm.shape)
         y0, x0 = int(np.clip(y - 150, 0, H - 300)), int(np.clip(x - 200, 0, W - 400))
@@ -137,7 +137,7 @@ def main():
     summary = {
         "sharp_seam_ratio": agg("sharp_seam", 1) / agg("sharp_seam", 0),
         "sharp_body_ratio": agg("sharp_body", 1) / agg("sharp_body", 0),
-        "noise_ratio": agg("noise_body", 1) / agg("noise_body", 0),          # >1 = orbcut이 더 노이즈
+        "noise_ratio": agg("noise_body", 1) / agg("noise_body", 0),          # >1 = multicam360이 더 노이즈
         "ssim_seam": float(np.median([r["ssim_seam"] for r in rows])),
         "ssim_body": float(np.median([r["ssim_body"] for r in rows])),
         "lab_delta": (np.median([np.array(r["lab_mean_ours"]) - np.array(r["lab_mean_studio"]) for r in rows], 0)).round(1).tolist(),

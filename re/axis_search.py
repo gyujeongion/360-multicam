@@ -2,8 +2,8 @@
 import itertools, sys, glob
 import cv2, numpy as np
 sys.path.insert(0, '.')
-from orbcut.engine import Projector, equirect_dirs, load_lenses
-from orbcut.imu import read_imu
+from multicam360.engine import Projector, equirect_dirs, load_lenses
+from multicam360.imu import read_imu
 
 L = load_lenses('re/move006.trailer')
 imu = read_imu(open('re/move006.trailer', 'rb').read())

@@ -1,7 +1,7 @@
 """offset_v6 회전 규칙 후보를 겹침 띠 밝기 차이(MAE)로 평가한다."""
 import itertools, sys
 import cv2, numpy as np
-sys.path.insert(0, '.'); sys.path.insert(0, 'orbcut')
+sys.path.insert(0, '.'); sys.path.insert(0, 'multicam360')
 from calib import read_metadata_bytes, offset_v6_from_metadata, parse_offset_v6, omni_project, euler
 
 lenses = parse_offset_v6(offset_v6_from_metadata(read_metadata_bytes('re/tail8m.bin')))

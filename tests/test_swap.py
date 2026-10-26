@@ -5,8 +5,8 @@ import json, os, subprocess
 import numpy as np
 import pytest
 
-from orbcut.swap import dump_script, parse_dump, place_script, plan, view_fn
-from orbcut.vrproj import premiere_matrix, to_vr, engine_matrix
+from multicam360.swap import dump_script, parse_dump, place_script, plan, view_fn
+from multicam360.vrproj import premiere_matrix, to_vr, engine_matrix
 
 FIX = os.path.join(os.path.dirname(__file__), "fixtures", "swap_measured.json")
 

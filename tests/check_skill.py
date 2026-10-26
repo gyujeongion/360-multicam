@@ -1,4 +1,4 @@
-"""스킬 문서 ↔ 실제 CLI 정합성 검사. 스킬이 부르는 orbcut 하위 명령·옵션이 전부 실재해야 통과.
+"""스킬 문서 ↔ 실제 CLI 정합성 검사. 스킬이 부르는 multicam360 하위 명령·옵션이 전부 실재해야 통과.
 
 usage: python3 tests/check_skill.py [--full]
 --full: 완성판 요구 항목(평가·UXP 패널 설치·원격) 문서화까지 검사 (M11)
@@ -6,7 +6,7 @@ usage: python3 tests/check_skill.py [--full]
 import os, re, subprocess, sys
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SKILL = os.environ.get("ORBCUT_SKILL", os.path.expanduser("~/.claude/skills/multicam360/SKILL.md"))
+SKILL = os.environ.get("MULTICAM360_SKILL", os.path.expanduser("~/.claude/skills/multicam360/SKILL.md"))
 PY = os.path.join(REPO, ".venv", "bin", "python")
 fails = []
 
@@ -17,20 +17,20 @@ fm = re.match(r"---\n(.*?)\n---\n", text, re.S)
 if not fm or "name: multicam360" not in fm.group(1) or "description:" not in fm.group(1):
     fails.append("frontmatter(name/description) 누락")
 
-helptext = subprocess.run([PY, "-m", "orbcut", "--help"], cwd=REPO, capture_output=True, text=True).stdout
+helptext = subprocess.run([PY, "-m", "multicam360", "--help"], cwd=REPO, capture_output=True, text=True).stdout
 subs = set(re.findall(r"\{([a-z,\-]+)\}", helptext)[0].split(","))
 used = set(re.findall(r"\$MC (?:--json )?([a-z\-]+)", text))
 for cmd in sorted(used):
     if cmd not in subs:
         fails.append(f"스킬이 부르는 명령 없음: {cmd}")
     else:
-        sub_help = subprocess.run([PY, "-m", "orbcut", cmd, "--help"], cwd=REPO, capture_output=True, text=True).stdout
+        sub_help = subprocess.run([PY, "-m", "multicam360", cmd, "--help"], cwd=REPO, capture_output=True, text=True).stdout
         for opt in set(re.findall(r"\$MC (?:--json )?" + re.escape(cmd) + r"[^\n`]*", text)):
             for flag in re.findall(r"(--[a-z\-]+)", opt):
                 if flag not in sub_help and flag != "--json":
                     fails.append(f"{cmd}: 옵션 {flag} 없음")
 
-for path in re.findall(r"`\$REPO/([^`\s]+)`", text) + re.findall(r"`(orbcut/[a-z_]+\.py)`", text):
+for path in re.findall(r"`\$REPO/([^`\s]+)`", text) + re.findall(r"`(multicam360/[a-z_]+\.py)`", text):
     if not os.path.exists(os.path.join(REPO, path)):
         fails.append(f"문서가 가리키는 파일 없음: {path}")
 

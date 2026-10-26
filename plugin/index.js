@@ -1,5 +1,5 @@
-// orbcut — orbcut 결과(premiere_shots.json)를 프리미어에서 다루는 패널.
-// 처리 엔진은 orbcut CLI. 이 패널은 불러오기·샷 이동·Motion(Scale/Position) 적용·미세조정만 한다.
+// multicam360 — multicam360 결과(premiere_shots.json)를 프리미어에서 다루는 패널.
+// 처리 엔진은 multicam360 CLI. 이 패널은 불러오기·샷 이동·Motion(Scale/Position) 적용·미세조정만 한다.
 // API: Premiere UXP 25.6+ (require("premierepro")). Motion 위치 = 0~1 정규화 PointF (프리미어 26.5 실기 확인, 2026-10-21).
 const ppro = require("premierepro");
 const { storage } = require("uxp");
@@ -37,9 +37,9 @@ function setParamActions(prm, value) {
 
 async function applyMotion(trackItem, scale, horiz, vert) {
   const { position, scale: sc } = await motionParams(trackItem);
-  // orbcut center(시퀀스 중앙 0, ±0.5) → Premiere Position(0~1, 왼쪽 위 원점)
+  // multicam360 center(시퀀스 중앙 0, ±0.5) → Premiere Position(0~1, 왼쪽 위 원점)
   const pt = new ppro.PointF(0.5 + horiz, 0.5 + vert);
-  transact(await project(), () => [...setParamActions(position, pt), ...setParamActions(sc, scale)], "orbcut 구도");
+  transact(await project(), () => [...setParamActions(position, pt), ...setParamActions(sc, scale)], "multicam360 구도");
 }
 
 function transact(proj, makeActions, label) {
@@ -80,11 +80,11 @@ async function nudge(kind, a, b) {
     const zero = ppro.TickTime.createWithSeconds(0);
     if (kind === "scale") {
       const cur = await scale.getValueAtTime(zero);
-      transact(await project(), () => setParamActions(scale, cur + a), "orbcut 확대");
+      transact(await project(), () => setParamActions(scale, cur + a), "multicam360 확대");
     } else {
       const cur = await position.getValueAtTime(zero);
       const pt = new ppro.PointF(cur.x + a, cur.y + b);
-      transact(await project(), () => setParamActions(position, pt), "orbcut 위치");
+      transact(await project(), () => setParamActions(position, pt), "multicam360 위치");
     }
   }
   status(`선택 클립 ${items.length}개 조정`);

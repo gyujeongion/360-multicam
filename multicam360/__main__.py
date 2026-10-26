@@ -1,4 +1,4 @@
-"""orbcut — Insta360 360 영상 → 화자 기반 멀티캠 컷 + 프리미어 XML.
+"""multicam360 — Insta360 360 영상 → 화자 기반 멀티캠 컷 + 프리미어 XML.
 
 명령:
   all <src> --out DIR [--range 4-00:7-00] [--meta TRAILER] [--host HOST]
@@ -34,7 +34,7 @@ def parse_sets(items):
 
 
 def main(argv=None):
-    ap = argparse.ArgumentParser(prog="orbcut", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap = argparse.ArgumentParser(prog="multicam360", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--json", action="store_true", help="결과를 한 줄 JSON으로 (AI용)")
     sub = ap.add_subparsers(dest="cmd", required=True)
 

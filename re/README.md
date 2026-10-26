@@ -1,6 +1,6 @@
 # Calibration format notes
 
-How `orbcut/calib.py` gets from a `.insv` recording to per-lens projection parameters. Each point was checked
+How `multicam360/calib.py` gets from a `.insv` recording to per-lens projection parameters. Each point was checked
 against the camera's own files and by rendering.
 
 ## Where the calibration lives
@@ -12,7 +12,7 @@ An `.insv` file ends with a trailer:
 - records are read back to front, each laid out as `[data][uint16 id][uint32 size]`
 
 Record `0x101` is a protobuf metadata message (about 1.5 KB). One of its string fields holds the lens
-calibration. The X6 writes the `offset_v6` variant; the gyro records used by `orbcut/imu.py` sit in the same
+calibration. The X6 writes the `offset_v6` variant; the gyro records used by `multicam360/imu.py` sit in the same
 trailer (layout as documented by [telemetry-parser](https://github.com/AdrianEddy/telemetry-parser)).
 
 ## `offset_v6`
@@ -48,7 +48,7 @@ valid where z / |r| ≥ cos(fov / 2) − 0.01
 
 ## Not verified
 
-- Other models (X4, X5) and the `offset_v3` / `offset_v8` variants. `orbcut probe` reports
+- Other models (X4, X5) and the `offset_v3` / `offset_v8` variants. `multicam360 probe` reports
   `supported: false` for anything other than `offset_v6`.
 
 ## Reproduce
